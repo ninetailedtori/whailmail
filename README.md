@@ -1,2 +1,3 @@
-# whailmail
-When handling your mail becomes a whale of a time!
+# WhailMail
+> The app that makes handling your mail, a whale of a time!
+

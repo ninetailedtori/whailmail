@@ -4,7 +4,7 @@
 ## Aims
 At the root of the project, the aims are such:
 - to provide a smooth, native-like experience, with modern intuitive stylish UI design
- - for cross platform including all desktop, mobile and web
+  - for cross platform including all desktop, mobile and web
 - good sync capabilities
 - support for as many major auth and mail protocols as possible
 - above all, it needs to be a comfortable product on all platforms
@@ -12,7 +12,7 @@ At the root of the project, the aims are such:
 - autostarting capabilities
 - notifications on all platforms of course :)
 - Ability to minimise to tray with notification badges
- - on all platforms, including wayland tray implementations
+  - on all platforms, including wayland tray implementations
 - Support for mailserver creation/self-hosting
 - Support for mail filtering both in incoming buffer
 - Support for filters for local mailservers. 

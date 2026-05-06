@@ -1,19 +1,28 @@
 {
   "name": "whailmail",
   "version": "0.0.0",
-  "private": true,
-  "type": "module",
+  "description": "An Electron application with Vue and TypeScript",
+  "homepage": "https://electron-vite.org",
+  "author": "example.com",
+  "main": "./out/main/index.js",
   "scripts": {
-    "dev": "electron-vite dev",
-    "build": "run-p type-check && electron-vite build",
     "preview": "electron-vite preview",
-    "test:unit": "vitest",
-    "test:e2e": "playwright test",
     "type-check": "vue-tsc --build",
     "lint": "run-s lint:*",
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
-    "format": "oxfmt ."
+    "format": "oxfmt .",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "pnpm run typecheck:node && pnpm run typecheck:web",
+    "start": "electron-vite preview",
+    "dev": "electron-vite dev",
+    "build": "pnpm run typecheck && electron-vite build",
+    "postinstall": "electron-builder install-app-deps",
+    "build:unpack": "pnpm run build && electron-builder --dir",
+    "build:win": "pnpm run build && electron-builder --win",
+    "build:mac": "pnpm run build && electron-builder --mac",
+    "build:linux": "pnpm run build && electron-builder --linux"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
@@ -23,20 +32,22 @@
     "@vueuse/core": "^14.3.0",
     "electron": "^42.0.0",
     "electron-builder": "^26.8.1",
+    "electron-updater": "^6.3.9",
     "pinia": "^3.0.4",
     "vue": "^3.6.0-beta.10",
     "vue-router": "^5.0.4"
   },
   "devDependencies": {
-    "@playwright/test": "^1.59.1",
+    "@electron-toolkit/eslint-config-prettier": "3.0.0",
+    "@electron-toolkit/eslint-config-ts": "^3.1.0",
+    "@electron-toolkit/tsconfig": "^2.0.0",
     "@tsconfig/node24": "^24.0.4",
-    "@types/jsdom": "^28.0.1",
     "@types/node": "^24.12.2",
     "@vitejs/plugin-vue": "^6.0.6",
-    "@vitest/eslint-plugin": "^1.6.16",
     "@vue/eslint-config-typescript": "^14.7.0",
-    "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.9.1",
+    "electron": "^39.2.6",
+    "electron-builder": "^26.0.12",
     "electron-vite": "^5.0.0",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
@@ -55,10 +66,17 @@
     "unplugin-vue-components": "^32.0.0",
     "vite": "^8.0.8",
     "vite-plugin-vue-devtools": "^8.1.1",
-    "vitest": "^4.1.4",
+    "vue": "^3.5.25",
+    "vue-eslint-parser": "^10.2.0",
     "vue-tsc": "^3.2.6"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild"
+    ]
   }
 }

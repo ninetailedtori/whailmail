@@ -36,22 +36,15 @@ export default defineConfig({
         },
       }),
       Fonts({
+        google: {
+          families: ["Inria Sans:300,400,700", "Afacad Flux:100..1000"],
+        },
         custom: {
           families: [
             {
               name: "JetBrainsMono Nerd Font",
               local: "JetBrainsMono Nerd Font",
-              src: "./public/fonts/JetBrainsMono-NF-*.woff2",
-            },
-            {
-              name: "Inria Sans",
-              local: "Inria Sans",
-              src: "https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap",
-            },
-            {
-              name: "Afacad Flux",
-              local: "Afacad Flux",
-              src: "https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap",
+              src: "./public/fonts/JetBrainsMono-NF-*.ttf",
             },
           ],
         },

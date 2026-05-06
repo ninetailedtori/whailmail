@@ -1,33 +1,73 @@
 # WhailMail
+
 > The app that makes handling your mail, a whale of a time!
 
 ## Aims
+
 At the root of the project, the aims are such:
-- to provide a smooth, native-like experience, with modern intuitive stylish UI design
-  - for cross platform including all desktop, mobile and web
-- good sync capabilities
-- support for as many major auth and mail protocols as possible
-- above all, it needs to be a comfortable product on all platforms
-- a background service for faster indexing, background auto-handling and archival
-- autostarting capabilities
-- notifications on all platforms of course :)
-- Ability to minimise to tray with notification badges
-  - on all platforms, including wayland tray implementations
+
+- To provide a smooth, native-like experience, with modern intuitive stylish UI
+  design
+  - For cross-platform including all desktop, mobile and web
+- Good sync capabilities
+- Support for as many major auth and mail protocols as possible
+- A background service for faster indexing, background auto-handling and
+  archival
+- Auto-starting capabilities
+- Notifications on all platforms, of course :)
+- Ability to "minimise to tray" with notification badges
 - Support for mailserver creation/self-hosting
 - Support for mail filtering both in incoming buffer
-- Support for filters for local mailservers. 
-- Importantly, the app needs to be fast, so the whole user experience feels fluid as can be 
+- Support for filters for local mailservers.
+- Importantly, the app needs to be fast, so the whole user experience feels like
+  a native user experience.
+- And above all, it needs to be a comfortable product on all platforms!
 
-## Installation - TODO
+## Project Setup
 
-## Settings - TODO
+```sh
+pnpm install
+```
 
-## Beta and Git-track Build Guide for Developers - TODO
+### Compile and Hot-Reload for Development
 
-## Wiki - TODO
+```sh
+pnpm dev
+```
 
-## Coding guidelines for contributors - TODO
-- JS/TS is styled with Biome, using the following [guidelines.](ADD LINK HERE.)
-- Rust is styled with Prettier for now. Possibly to change later on.
+### Type-Check, Compile and Minify for Production
 
-## Fund our project now! [TODO]
+```sh
+pnpm build
+```
+
+### Run Unit Tests with [Vitest](https://vitest.dev/)
+
+```sh
+pnpm test:unit
+```
+
+### Run End-to-End Tests with [Playwright](https://playwright.dev)
+
+```sh
+# Install browsers for the first run
+npx playwright install
+
+# When testing on CI, must build the project first
+pnpm build
+
+# Runs the end-to-end tests
+pnpm test:e2e
+# Runs the tests only on Chromium
+pnpm test:e2e --project=chromium
+# Runs the tests of a specific file
+pnpm test:e2e tests/example.spec.ts
+# Runs the tests in debug mode
+pnpm test:e2e --debug
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+pnpm lint
+```

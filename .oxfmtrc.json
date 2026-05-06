@@ -7,5 +7,6 @@
   "trailingComma": "es5",
   "sortImports": true,
   "sortTailwindcss": true,
-  "sortPackageJson": true
+  "sortPackageJson": true,
+  "ignorePatterns": ["src/renderer/auto-imports.d.ts", "src/renderer/components.d.ts", "src/renderer/typed-router.d.ts", ".eslintrc-auto-import.json","pnpm-lock.yaml"]
 }

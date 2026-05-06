@@ -1,6 +1,7 @@
 import { resolve } from "path";
 
 import ui from "@nuxt/ui/vite";
+import tailwindcss from "@tailwindcss/vite";
 import vue from "@vitejs/plugin-vue";
 import { defineConfig } from "electron-vite";
 import Fonts from "unplugin-fonts/vite";
@@ -19,7 +20,10 @@ export default defineConfig({
       },
     },
     plugins: [
-      VueRouter(),
+      tailwindcss(),
+      VueRouter({
+        dts: resolve("src/renderer/typed-router.d.ts"),
+      }),
       vue(),
       vueDevTools(),
       ui({

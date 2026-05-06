@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import Versions from "./components/Versions.vue";
 
 const ipcHandle = (): void => window.electron.ipcRenderer.send("ping");
@@ -14,14 +14,15 @@ const ipcHandle = (): void => window.electron.ipcRenderer.send("ping");
     <span class="ts">TypeScript</span>
   </div>
   <p class="tip">Please try pressing <code>F12</code> to open the devTool</p>
+  <p class="text">meow mrrrrp prr :3c</p>
   <div class="actions">
     <div class="action">
-      <a href="https://electron-vite.org/" target="_blank" rel="noreferrer"
+      <a href="https://electron-vite.org/" rel="noreferrer" target="_blank"
         >Documentation</a
       >
     </div>
     <div class="action">
-      <a target="_blank" rel="noreferrer" @click="ipcHandle">Send IPC</a>
+      <a rel="noreferrer" target="_blank" @click="ipcHandle">Send IPC</a>
     </div>
   </div>
   <Versions />

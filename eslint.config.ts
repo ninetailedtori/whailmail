@@ -1,4 +1,3 @@
-import pluginVitest from "@vitest/eslint-plugin";
 import {
   defineConfigWithVueTs,
   vueTsConfigs,
@@ -28,11 +27,6 @@ export default defineConfigWithVueTs(
   {
     ...pluginPlaywright.configs["flat/recommended"],
     files: ["e2e/**/*.{test,spec}.{js,ts,jsx,tsx}"],
-  },
-
-  {
-    ...pluginVitest.configs.recommended,
-    files: ["src/**/__tests__/*"],
   },
 
   ...pluginOxlint.buildFromOxlintConfigFile(".oxlintrc.json"),

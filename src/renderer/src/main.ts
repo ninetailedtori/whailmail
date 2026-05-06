@@ -1,6 +1,7 @@
 import "./assets/main.css";
 import { createApp } from "vue";
-// @ts-ignore: it's OK
+
+// @ts-expect-error: it's OK
 import App from "./App.vue";
 import { router } from "./router";
 

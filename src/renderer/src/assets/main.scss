@@ -3,15 +3,16 @@
 @use "@nuxt/ui";
 
 /* CSS Imports */
-// @import "@catppuccin/tailwindcss/latte.css" layer(theme-latte);
+/*@import "@catppuccin/tailwindcss/latte.css" layer(theme-latte);*/
 @import "@catppuccin/tailwindcss/frappe.css" layer(theme-frappe);
 @import "@catppuccin/tailwindcss/macchiato.css" layer(theme-macchiato);
 @import "@catppuccin/tailwindcss/mocha.css" layer(theme-mocha);
-@import "./base.css";
 @import "./prime.css";
 
 /* Tailwind Directives */
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Main Styling */
 .heading {

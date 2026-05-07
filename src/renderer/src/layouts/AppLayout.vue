@@ -65,8 +65,8 @@ import Toolbar from 'primevue/toolbar';
   <footer></footer>
 </template>
 
-<style scoped>
-@reference './../assets/main.css';
+<style scoped lang="scss">
+@reference './../assets/main.scss';
 
 .toolbar {
   @apply w-full leading-0!;

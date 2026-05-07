@@ -5,6 +5,7 @@ import App from './App.vue'
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import Tooltip from 'primevue/tooltip';
+import './assets/main.scss';
 
 const app = createApp(App)
 

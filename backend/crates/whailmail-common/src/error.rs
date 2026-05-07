@@ -1,0 +1,51 @@
+//! Exceptions
+
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum EAppError {
+    #[error("Database error: {0}")]
+    DatabaseError(String),
+
+    #[error("Record not found: {0}")]
+    NotFound(String),
+
+    #[error("Invalid credentials")]
+    InvalidCredentials,
+
+    #[error("JWT token expired")]
+    TokenExpired,
+
+    #[error("Unauthorized")]
+    Unauthorized,
+
+    #[error("IMAP connection failed: {0}")]
+    ImapConnectionError(String),
+
+    #[error("SMTP connection failed: {0}")]
+    SmtpConnectionError(String),
+
+    #[error("Mail parsing error: {0}")]
+    MailParsingError(String),
+
+    #[error("Validation error: {0}")]
+    ValidationError(String),
+
+    #[error("Internal server error: {0}")]
+    InternalError(String),
+}
+
+impl EAppError {
+    pub fn status_code(&self) -> u16 {
+        match self {
+            EAppError::NotFound(_) => 404,
+            EAppError::InvalidCredentials => 401,
+            EAppError::Unauthorized => 403,
+            EAppError::ValidationError(_) => 400,
+            EAppError::TokenExpired => 401,
+            _ => 500,
+        }
+    }
+}
+
+pub type RAppResult<T> = Result<T, EAppError>;

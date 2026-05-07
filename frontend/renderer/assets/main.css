@@ -1,0 +1,39 @@
+/* Framework imports */
+@import "tailwindcss";
+@import "@nuxt/ui";
+@import "@catppuccin/tailwindcss/macchiato.css";
+
+/* Design tokens */
+@import "tokens/colours.css";
+@import "tokens/spacing.css";
+@import "tokens/radius.css";
+@import "tokens/sizes.css";
+@import "tokens/typography.css";
+
+/* Component styles */
+@import "components/heading.css";
+@import "components/code.css";
+@import "components/button.css";
+@import "components/versions.css";
+
+/* Global body */
+body {
+  color: var(--color-ctp-text);
+  background-color: var(--color-ctp-base);
+  font-family: var(--font-sans);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-image: url("@resources/wavy-lines.svg");
+  background-size: cover;
+  user-select: none;
+}
+
+#app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: var(--space-2xl);
+}

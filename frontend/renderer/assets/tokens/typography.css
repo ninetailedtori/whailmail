@@ -1,0 +1,24 @@
+:root {
+  /* Font families */
+  --font-sans: "Inria Sans", sans-serif;
+  --font-serif: "Afacad Flux", serif;
+  --font-mono: "JetBrainsMono Nerd Font", monospace;
+
+  /* Font sizes */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 28px;
+  --text-2xl: 32px;
+
+  /* Font weights */
+  --font-normal: 400;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* Line heights */
+  --line-tight: 1;
+  --line-normal: 1.5;
+  --line-relaxed: 1.625;
+}

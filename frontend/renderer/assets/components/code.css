@@ -1,0 +1,9 @@
+code {
+  font-weight: var(--font-semibold);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-xs);
+  color: var(--color-text);
+  background-color: var(--color-bg-elevated);
+  font-family: var(--font-mono);
+  font-size: 85%;
+}

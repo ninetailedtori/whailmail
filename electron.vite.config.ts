@@ -12,7 +12,7 @@ import VueRouter from "vue-router/vite";
 
 const sharedAliases = {
   "@resources": resolve("./resources"),
-  "@shared": resolve("./src/shared"),
+  "@shared": resolve("./frontend/shared"),
 };
 
 export default defineConfig({
@@ -34,19 +34,19 @@ export default defineConfig({
     resolve: {
       alias: {
         ...sharedAliases,
-        "@": resolve("./src/renderer"),
-        "@stores": resolve("./src/renderer/stores"),
-        "@components": resolve("./src/renderer/components"),
-        "@pages": resolve("./src/renderer/pages"),
-        "@layouts": resolve("./src/renderer/layouts"),
-        "@router": resolve("./src/renderer/router"),
-        "@styles": resolve("./src/renderer/styles"),
+        "@": resolve("./frontend/renderer"),
+        "@stores": resolve("./frontend/renderer/stores"),
+        "@components": resolve("./frontend/renderer/components"),
+        "@pages": resolve("./frontend/renderer/pages"),
+        "@layouts": resolve("./frontend/renderer/layouts"),
+        "@router": resolve("./frontend/renderer/router"),
+        "@styles": resolve("./frontend/renderer/styles"),
       },
     },
     plugins: [
       tailwindcss(),
       VueRouter({
-        dts: resolve("src/renderer/typed-router.d.ts"),
+        dts: resolve("frontend/renderer/typed-router.d.ts"),
       }),
       vue(),
       vueDevTools(),
@@ -54,7 +54,7 @@ export default defineConfig({
         router: true,
         components: {
           resolvers: [IconsResolver()],
-          dirs: ["./src/renderer/components"],
+          dirs: ["./frontend/renderer/components"],
         },
         ui: {
           colors: {
@@ -69,7 +69,10 @@ export default defineConfig({
         },
         autoImport: {
           imports: ["vue", "vue-router", "pinia"],
-          dirs: ["./src/renderer/composables", "./src/renderer/utils"],
+          dirs: [
+            "./frontend/renderer/composables",
+            "./frontend/renderer/utils",
+          ],
           eslintrc: {
             enabled: true,
           },

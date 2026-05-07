@@ -1,0 +1,9 @@
+.heading {
+  color: var(--color-accent);
+  background-color: var(--color-bg);
+  font-family: var(--font-serif);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}

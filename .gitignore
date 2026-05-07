@@ -1,3 +1,10 @@
+## Rust Backend
+
+# Build
+backend/target/
+
+## Vue/TS Frontend
+
 # Logs
 logs
 *.log

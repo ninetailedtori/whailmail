@@ -1,0 +1,30 @@
+.action {
+  flex-shrink: 0;
+  padding: var(--space-lg);
+}
+
+.action a {
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  border: 2px solid transparent;
+  text-align: center;
+  font-weight: var(--font-semibold);
+  white-space: nowrap;
+  border-radius: var(--radius-xl);
+  padding: 0 var(--space-xl);
+  line-height: 38px;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  background-color: var(--color-bg-elevated);
+  transition: background-color 200ms ease;
+
+  &:hover {
+    background-color: var(--color-bg-hover);
+  }
+
+  &:is(:active, :focus) {
+    color: var(--color-bg);
+    background-color: var(--color-accent);
+  }
+}

@@ -1,24 +1,24 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
   "include": [
-    "src/renderer/env.d.ts",
-    "src/renderer/**/*",
-    "src/renderer/**/*.vue",
-    "src/preload/*.d.ts"
+    "frontend/renderer/env.d.ts",
+    "frontend/renderer/**/*",
+    "frontend/renderer/**/*.vue",
+    "frontend/preload/*.d.ts"
   ],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
     "paths": {
       "@resources/*": ["resources/*"],
-      "@/*": ["src/renderer/*"],
-      "@stores/*": ["src/renderer/stores/*"],
-      "@components/*": ["src/renderer/components/*"],
-      "@pages/*": ["src/renderer/pages/*"],
-      "@layouts/*": ["src/renderer/layouts/*"],
-      "@router/*": ["src/renderer/router/*"],
-      "@styles/*": ["src/renderer/styles/*"],
-      "@shared/*": ["src/shared/*"]
+      "@/*": ["frontend/renderer/*"],
+      "@stores/*": ["frontend/renderer/stores/*"],
+      "@components/*": ["frontend/renderer/components/*"],
+      "@pages/*": ["frontend/renderer/pages/*"],
+      "@layouts/*": ["frontend/renderer/layouts/*"],
+      "@router/*": ["frontend/renderer/router/*"],
+      "@assets/*": ["frontend/renderer/assets/*"],
+      "@shared/*": ["frontend/shared/*"]
     }
   },
   "vueCompilerOptions": {

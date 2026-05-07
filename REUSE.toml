@@ -13,7 +13,7 @@ path = [
   "README.md",
   "meson.build",
   "meson_options.txt",
-  "src/**",
+  "frontend/**",
   "include/**",
   "data/**",
 ]

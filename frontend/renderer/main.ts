@@ -11,6 +11,10 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import "@assets/main.css";
 import App from "./App.vue";
+import PrimeVue from 'primevue/config';
+import Aura from '@primeuix/themes/aura';
+import { Tooltip } from "primevue";
+import '@primeuix/themes/aura';
 
 const app = createApp(App);
 
@@ -19,7 +23,12 @@ const router = createRouter({
   history: createWebHistory(),
 });
 
-app.use(router);
-app.use(ui);
-
-app.mount("#app");
+app.use(router)
+  .use(ui)
+  .use(PrimeVue, {
+    theme: {
+      preset: Aura
+    },
+  })
+  .directive('tooltip', Tooltip)
+  .mount("#app");

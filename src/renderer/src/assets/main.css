@@ -1,5 +1,19 @@
 @import "./base.css";
+@import "./prime.css";
 
+.dragger {
+  app-region: drag;
+  user-select: none;
+}
+
+.__no_drag {
+  app-region: no-drag;
+  padding: 0 !important;
+  margin: 0 !important;
+  user-select: none;
+}
+
+/*
 body {
   display: flex;
   align-items: center;
@@ -169,3 +183,4 @@ code {
     display: none;
   }
 }
+*/

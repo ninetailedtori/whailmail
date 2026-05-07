@@ -1,13 +1,12 @@
-/*
- * SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
- * SPDX-FileContributor: WhailMail contributors
- *
- * SPDX-License-Identifier: GPL-3.0-or-later
- */
+// SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
+// SPDX-FileContributor: WhailMail contributors
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Constants
 
-pub mod app {
+pub mod app
+{
     pub const NAME: &str = "whailmail";
     pub const FANCY_NAME: &str = "WhailMail";
     pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -15,11 +14,13 @@ pub mod app {
     pub const DB_SCHEMA_VERSION: u32 = 1;
 }
 
-pub mod api {
+pub mod api
+{
     pub const API_VERSION: &str = "v1";
     pub const BASE_PATH: &str = "/api/v1";
 
-    pub mod endpoints {
+    pub mod endpoints
+    {
         pub const HEALTH: &str = "/health";
         pub const AUTH_LOGIN: &str = "/auth/login";
         pub const AUTH_LOGOUT: &str = "/auth/logout";
@@ -48,7 +49,8 @@ pub mod api {
     }
 }
 
-pub mod ports {
+pub mod ports
+{
     pub const DEFAULT_API_PORT: u16 = 3000;
     pub const DEFAULT_SMTP_PORT: u16 = 25;
     pub const DEFAULT_SMTP_SUBMISSION_PORT: u16 = 587;
@@ -58,7 +60,8 @@ pub mod ports {
     pub const DEFAULT_WEB_PORT: u16 = 5173;
 }
 
-pub mod timeouts {
+pub mod timeouts
+{
     pub const DEFAULT_TIMEOUT_SECS: u64 = 30;
     pub const DB_TIMEOUT_SECS: u64 = 15;
     pub const SMTP_TIMEOUT_SECS: u64 = 60;
@@ -68,7 +71,8 @@ pub mod timeouts {
     pub const REFRESH_TOKEN_EXPIRY_DAYS: i64 = 30;
 }
 
-pub mod limits {
+pub mod limits
+{
     pub const MAX_EMAIL_SIZE_MB: u64 = 25;
     pub const MAX_ATTACHMENT_SIZE_MB: u64 = 20;
     pub const MAX_ATTACHMENTS_PER_EMAIL: usize = 10;
@@ -85,33 +89,39 @@ pub mod limits {
     pub const USERNAME_MAX_LENGTH: usize = 64;
 }
 
-pub mod rates {
+pub mod rates
+{
     pub const SMTP_RATE_LIMIT_PER_HOUR: u32 = 300;
     pub const LOGIN_ATTEMPT_LIMIT: u32 = 5;
     pub const LOGIN_ATTEMPT_WINDOW_MINUTES: u32 = 15;
     pub const API_RATE_LIMIT_PER_MINUTE: u32 = 60;
 }
 
-pub mod paths {
+pub mod paths
+{
     use std::path::PathBuf;
 
-    enum DirType {
+    enum DirType
+    {
         Data,
         Config,
         Cache,
-        Log,
+        Log
     }
 
-    fn get_base_dir(dir_type: DirType) -> PathBuf {
+    fn get_base_dir(dir_type: DirType) -> PathBuf
+    {
         #[cfg(target_os = "windows")]
         {
-            let env_var = match dir_type {
-                DirType::Cache | DirType::Log => "LOCALAPPDATA",
-                _ => "APPDATA",
+            let env_var = match dir_type
+            {
+                | DirType::Cache | DirType::Log => "LOCALAPPDATA",
+                | _ => "APPDATA"
             };
-            let fallback = match dir_type {
-                DirType::Cache | DirType::Log => "APPDATA",
-                _ => "LOCALAPPDATA",
+            let fallback = match dir_type
+            {
+                | DirType::Cache | DirType::Log => "APPDATA",
+                | _ => "LOCALAPPDATA"
             };
             let base = std::env::var(env_var)
                 .or_else(|_| std::env::var(fallback))
@@ -121,59 +131,109 @@ pub mod paths {
 
         #[cfg(target_os = "macos")]
         {
-            match dir_type {
-                DirType::Data => dirs::data_local_dir()
-                    .unwrap_or_else(|| dirs::home_dir().unwrap_or_default().join(".local/share")),
-                DirType::Config => dirs::config_dir().unwrap_or_else(|| {
-                    dirs::home_dir()
-                        .unwrap_or_default()
-                        .join("Library/Preferences")
-                }),
-                DirType::Cache => dirs::cache_dir()
-                    .unwrap_or_else(|| dirs::home_dir().unwrap_or_default().join("Library/Caches")),
-                DirType::Log => dirs::home_dir().unwrap_or_default().join("Library/Logs"),
+            match dir_type
+            {
+                | DirType::Data =>
+                {
+                    dirs::data_local_dir().unwrap_or_else(|| {
+                        dirs::home_dir()
+                            .unwrap_or_default()
+                            .join(".local/share")
+                    })
+                },
+                | DirType::Config =>
+                {
+                    dirs::config_dir().unwrap_or_else(|| {
+                        dirs::home_dir()
+                            .unwrap_or_default()
+                            .join("Library/Preferences")
+                    })
+                },
+                | DirType::Cache =>
+                {
+                    dirs::cache_dir().unwrap_or_else(|| {
+                        dirs::home_dir()
+                            .unwrap_or_default()
+                            .join("Library/Caches")
+                    })
+                },
+                | DirType::Log =>
+                {
+                    dirs::home_dir().unwrap_or_default().join("Library/Logs")
+                },
             }
         }
 
         #[cfg(target_os = "ios")]
         {
             let app_id = crate::constants::app::NAME;
-            match dir_type {
-                DirType::Data => PathBuf::from(format!(
-                    "/var/mobile/Containers/Data/Application/{}/Documents",
-                    app_id
-                )),
-                DirType::Config => PathBuf::from(format!(
-                    "/var/mobile/Containers/Data/Application/{}/Library",
-                    app_id
-                )),
-                DirType::Cache => PathBuf::from(format!(
-                    "/var/mobile/Containers/Data/Application/{}/Library/Caches",
-                    app_id
-                )),
-                DirType::Log => PathBuf::from(format!(
-                    "/var/mobile/Containers/Data/Application/{}/Documents/Logs",
-                    app_id
-                )),
+            match dir_type
+            {
+                | DirType::Data =>
+                {
+                    PathBuf::from(format!(
+                        "/var/mobile/Containers/Data/Application/{}/Documents",
+                        app_id
+                    ))
+                },
+                | DirType::Config =>
+                {
+                    PathBuf::from(format!(
+                        "/var/mobile/Containers/Data/Application/{}/Library",
+                        app_id
+                    ))
+                },
+                | DirType::Cache =>
+                {
+                    PathBuf::from(format!(
+                        "/var/mobile/Containers/Data/Application/{}/Library/\
+                         Caches",
+                        app_id
+                    ))
+                },
+                | DirType::Log =>
+                {
+                    PathBuf::from(format!(
+                        "/var/mobile/Containers/Data/Application/{}/Documents/\
+                         Logs",
+                        app_id
+                    ))
+                },
             }
         }
 
         #[cfg(target_os = "android")]
         {
-            match dir_type {
-                DirType::Data => {
-                    PathBuf::from(format!("/data/data/{}/files", crate::constants::app::NAME))
-                }
-                DirType::Config => PathBuf::from(format!(
-                    "/data/data/{}/shared_prefs",
-                    crate::constants::app::NAME
-                )),
-                DirType::Cache => {
-                    PathBuf::from(format!("/data/data/{}/cache", crate::constants::app::NAME))
-                }
-                DirType::Log => {
-                    PathBuf::from(format!("/data/data/{}/logs", crate::constants::app::NAME))
-                }
+            match dir_type
+            {
+                | DirType::Data =>
+                {
+                    PathBuf::from(format!(
+                        "/data/data/{}/files",
+                        crate::constants::app::NAME
+                    ))
+                },
+                | DirType::Config =>
+                {
+                    PathBuf::from(format!(
+                        "/data/data/{}/shared_prefs",
+                        crate::constants::app::NAME
+                    ))
+                },
+                | DirType::Cache =>
+                {
+                    PathBuf::from(format!(
+                        "/data/data/{}/cache",
+                        crate::constants::app::NAME
+                    ))
+                },
+                | DirType::Log =>
+                {
+                    PathBuf::from(format!(
+                        "/data/data/{}/logs",
+                        crate::constants::app::NAME
+                    ))
+                },
             }
         }
 
@@ -185,11 +245,12 @@ pub mod paths {
             target_os = "netbsd"
         ))]
         {
-            let (env_var, fallback) = match dir_type {
-                DirType::Data => ("XDG_DATA_HOME", ".local/share"),
-                DirType::Config => ("XDG_CONFIG_HOME", ".config"),
-                DirType::Cache => ("XDG_CACHE_HOME", ".cache"),
-                DirType::Log => ("XDG_STATE_HOME", ".local/state"),
+            let (env_var, fallback) = match dir_type
+            {
+                | DirType::Data => ("XDG_DATA_HOME", ".local/share"),
+                | DirType::Config => ("XDG_CONFIG_HOME", ".config"),
+                | DirType::Cache => ("XDG_CACHE_HOME", ".cache"),
+                | DirType::Log => ("XDG_STATE_HOME", ".local/state")
             };
 
             let base = std::env::var(env_var).unwrap_or_else(|_| {
@@ -203,19 +264,23 @@ pub mod paths {
         }
     }
 
-    pub fn data_dir() -> PathBuf {
+    pub fn data_dir() -> PathBuf
+    {
         get_base_dir(DirType::Data).join(crate::constants::app::NAME)
     }
 
-    pub fn config_dir() -> PathBuf {
+    pub fn config_dir() -> PathBuf
+    {
         get_base_dir(DirType::Config).join(crate::constants::app::NAME)
     }
 
-    pub fn cache_dir() -> PathBuf {
+    pub fn cache_dir() -> PathBuf
+    {
         get_base_dir(DirType::Cache).join(crate::constants::app::NAME)
     }
 
-    pub fn log_dir() -> PathBuf {
+    pub fn log_dir() -> PathBuf
+    {
         let base = get_base_dir(DirType::Log);
         #[cfg(any(
             target_os = "linux",
@@ -239,28 +304,19 @@ pub mod paths {
         }
     }
 
-    pub fn certs_dir() -> PathBuf {
-        config_dir().join("certs")
-    }
+    pub fn certs_dir() -> PathBuf { config_dir().join("certs") }
 
-    pub fn search_index_dir() -> PathBuf {
-        cache_dir().join("search_index")
-    }
+    pub fn search_index_dir() -> PathBuf { cache_dir().join("search_index") }
 
-    pub fn backups_dir() -> PathBuf {
-        data_dir().join("backups")
-    }
+    pub fn backups_dir() -> PathBuf { data_dir().join("backups") }
 
-    pub fn db_path() -> PathBuf {
-        data_dir().join("whailmail.db")
-    }
+    pub fn db_path() -> PathBuf { data_dir().join("whailmail.db") }
 
-    pub fn config_file() -> PathBuf {
-        config_dir().join("config.toml")
-    }
+    pub fn config_file() -> PathBuf { config_dir().join("config.toml") }
 }
 
-pub mod mail {
+pub mod mail
+{
     pub const RFC5322_MAX_LINE_LENGTH: usize = 998;
     pub const SMTP_BANNER_TIMEOUT_SECS: u64 = 5;
     pub const SMTP_COMMAND_TIMEOUT_SECS: u64 = 10;
@@ -270,7 +326,8 @@ pub mod mail {
     pub const DEFAULT_CHARSET: &str = "utf-8";
 }
 
-pub mod auth {
+pub mod auth
+{
     pub const JWT_ALGORITHM: &str = "HS256";
     pub const JWT_ISSUER: &str = "whailmail";
     pub const BCRYPT_COST: u32 = 12;
@@ -279,21 +336,24 @@ pub mod auth {
     pub const ARGON2_PARALLELISM: u32 = 4;
 }
 
-pub mod database {
+pub mod database
+{
     pub const DEFAULT_MIN_CONNECTIONS: u32 = 2;
     pub const DEFAULT_MAX_CONNECTIONS: u32 = 10;
     pub const DB_TIMEOUT_SECS: u64 = 15;
     pub const QUERY_TIMEOUT_SECS: u64 = 30;
 }
 
-pub mod sync {
+pub mod sync
+{
     pub const SYNC_INTERVAL_SECS: u64 = 300;
     pub const SYNC_BATCH_SIZE: u32 = 100;
     pub const FULL_SYNC_INTERVAL_DAYS: u32 = 7;
     pub const IDLE_TIMEOUT_SECS: u64 = 1200;
 }
 
-pub mod status {
+pub mod status
+{
     pub const STATUS_ACTIVE: &str = "active";
     pub const STATUS_INACTIVE: &str = "inactive";
     pub const STATUS_SYNCING: &str = "syncing";
@@ -301,7 +361,8 @@ pub mod status {
     pub const STATUS_PENDING: &str = "pending";
 }
 
-pub mod headers {
+pub mod headers
+{
     pub const CONTENT_TYPE: &str = "content-type";
     pub const AUTHORIZATION: &str = "authorization";
     pub const X_REQUEST_ID: &str = "x-request-id";
@@ -309,20 +370,23 @@ pub mod headers {
     pub const X_API_VERSION: &str = "x-api-version";
 }
 
-pub mod defaults {
+pub mod defaults
+{
     pub const LANG: &str = "en";
     pub const TIMEZONE: &str = "UTC";
     pub const THEME: &str = "catppuccin-macchiato";
 }
 
-pub mod cache {
+pub mod cache
+{
     pub const USER_CACHE_TTL_SECS: u64 = 3600;
     pub const ACCOUNT_CACHE_TTL_SECS: u64 = 1800;
     pub const MAILBOX_CACHE_TTL_SECS: u64 = 300;
     pub const EMAIL_CACHE_TTL_SECS: u64 = 600;
 }
 
-pub mod errors {
+pub mod errors
+{
     pub const ERR_INVALID_CREDENTIALS: &str = "Invalid credentials";
     pub const ERR_ACCOUNT_NOT_FOUND: &str = "Account not found";
     pub const ERR_USER_NOT_FOUND: &str = "User not found";
@@ -343,14 +407,16 @@ pub mod errors {
     pub const ERR_INTERNAL_SERVER_ERROR: &str = "Internal server error";
 }
 
-pub mod regex {
+pub mod regex
+{
     pub const EMAIL_REGEX: &str = r#"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"#;
     pub const USERNAME_REGEX: &str = r"^[a-zA-Z0-9_-]{3,64}$";
     pub const DOMAIN_REGEX: &str = r"^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$";
     pub const HOSTNAME_REGEX: &str = r"^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$";
 }
 
-pub mod mimetypes {
+pub mod mimetypes
+{
     pub const APPLICATION_JSON: &str = "application/json";
     pub const APPLICATION_OCTET_STREAM: &str = "application/octet-stream";
     pub const TEXT_PLAIN: &str = "text/plain";

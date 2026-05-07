@@ -1,16 +1,15 @@
-/*
- * SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
- * SPDX-FileContributor: WhailMail contributors
- *
- * SPDX-License-Identifier: GPL-3.0-or-later
- */
+// SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
+// SPDX-FileContributor: WhailMail contributors
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Exceptions
 
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum EAppError {
+pub enum EAppError
+{
     #[error("Database error: {0}")]
     DatabaseError(String),
 
@@ -39,18 +38,21 @@ pub enum EAppError {
     ValidationError(String),
 
     #[error("Internal server error: {0}")]
-    InternalError(String),
+    InternalError(String)
 }
 
-impl EAppError {
-    pub fn status_code(&self) -> u16 {
-        match self {
-            EAppError::NotFound(_) => 404,
-            EAppError::InvalidCredentials => 401,
-            EAppError::Unauthorized => 403,
-            EAppError::ValidationError(_) => 400,
-            EAppError::TokenExpired => 401,
-            _ => 500,
+impl EAppError
+{
+    pub fn status_code(&self) -> u16
+    {
+        match self
+        {
+            | EAppError::NotFound(_) => 404,
+            | EAppError::InvalidCredentials => 401,
+            | EAppError::Unauthorized => 403,
+            | EAppError::ValidationError(_) => 400,
+            | EAppError::TokenExpired => 401,
+            | _ => 500
         }
     }
 }

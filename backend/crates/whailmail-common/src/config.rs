@@ -3,7 +3,20 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Configuration
+//! # Configuration Structures — The Knobs & Dials (´｀)
+//!
+//! All the tunable stuff: database URLs, JWT secrets, log levels, mail server
+//! defaults, connection pool sizes. This is where environment-specific behavior
+//! lives.
+//!
+//! **Organized by concern:**
+//! - App config (port, JWT secret, log level, environment)
+//! - Database config (connection pool, driver choice)
+//! - Mail server defaults (IMAP/SMTP ports, timeouts, TLS settings)
+//! - Feature flags (self-hosted mode, encryption, etc.)
+//!
+//! Meant to be loaded from `.env` or environment variables at startup,
+//! not hardcoded.
 
 use {
     serde::{Deserialize, Serialize},

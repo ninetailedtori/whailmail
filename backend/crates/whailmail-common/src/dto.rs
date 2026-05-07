@@ -3,10 +3,24 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Data-Transfer Object
+//! # Request & Response DTOs — The Bridge to the REST API (´▽`)
+//!
+//! If `types.rs` is the database schema, `dto.rs` is the contract between your
+//! frontend and backend. These are what the wire carries: stripped down,
+//! validated, and shaped for JSON.
+//!
+//! **Includes:**
+//! - Auth DTOs: login, register, token responses
+//! - Account DTOs: create account, sync status, credentials
+//! - Email DTOs: send, list, get single message
+//! - Filter DTOs: create, update, list rules
+//! - Settings DTOs: get/update user prefs
+//!
+//! Each DTO is carefully designed to avoid leaking internal fields (e.g., no
+//! `password_hash` in responses) and to make validation straightforward.
 
 use {
-    crate::{EAccountType, EFilterAction, EMailboxType, ETheme},
+    crate::{EAccountType, EFilterAction, ETheme, SMailbox},
     chrono::{DateTime, Utc},
     serde::{Deserialize, Serialize}
 };
@@ -72,18 +86,7 @@ pub struct SAccountResp
 
 // Mailbox
 #[derive(Debug, Serialize, Deserialize)]
-pub struct SMailboxResp
-{
-    pub id:           String,
-    pub account_id:   String,
-    pub name:         String,
-    pub imap_name:    String,
-    pub mailbox_type: EMailboxType,
-    pub unread_count: u32,
-    pub total_count:  u32,
-    pub last_sync:    Option<DateTime<Utc>>,
-    pub created_at:   DateTime<Utc>
-}
+pub struct SMailboxResp(pub SMailbox);
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SMailboxListResp

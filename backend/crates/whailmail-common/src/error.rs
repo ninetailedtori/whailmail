@@ -3,7 +3,18 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Exceptions
+//! # Error Handling for WhailMail (๑•́ ω •̀๑)
+//!
+//! The single source of truth for all errors in the system. `EAppError` wraps
+//! validation failures, auth mishaps, database oopsies, and mail server chaos
+//! into HTTP-friendly status codes.
+//!
+//! **Also includes:**
+//! - `RAppResult<T>` — convenient Result alias
+//! - `status_code()` method for easy REST response mapping
+//!
+//! Every error variant maps to a specific HTTP status (400, 401, 404, 500,
+//! etc.), so the API layer doesn't have to guess what went wrong.
 
 use thiserror::Error;
 

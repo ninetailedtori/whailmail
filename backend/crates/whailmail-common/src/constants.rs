@@ -3,8 +3,20 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Application constants – cryptographic algorithms, standards, patterns, and
-//! error messages. Configuration defaults live in config.rs
+//! # Application Constants — The Rules of the Road (´▽`)
+//!
+//! All the magic numbers that shouldn't change at runtime: max attachment
+//! sizes, sync intervals, password policy, JWT expiration, protocol defaults.
+//!
+//! **For example:**
+//! - Default IMAP fetch batch size
+//! - Max email body length
+//! - JWT token lifetime
+//! - Rate limit defaults
+//! - SMTP/IMAP default ports & timeouts
+//!
+//! Keeping these centralized means you only need to change one place to tweak
+//! system-wide behavior.
 
 pub mod app
 {

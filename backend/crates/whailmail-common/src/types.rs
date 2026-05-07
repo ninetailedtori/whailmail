@@ -3,7 +3,21 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Types
+//! # Core Domain Types — The Soul of WhailMail ╰(*´︿`*)╯
+//!
+//! All your models live here: users, accounts, mailboxes, emails, filters,
+//! settings. Think of this as the Rosetta Stone between the database schema and
+//! what your brain thinks about when you're writing mail logic.
+//!
+//! **Key types:**
+//! - `SUser` — identity and auth
+//! - `SAccount` — mailbox credentials (Gmail, ProtonMail, self-hosted, etc.)
+//! - `SMailbox` — folder representation
+//! - `SEmail` — message storage with flags, threading hints
+//! - `SFilter` — rules for auto-organizing mail
+//! - `SSettings` — user preferences (theme, notifications, sync behavior)
+//!
+//! All IDs are UUID v4 strings. All timestamps are UTC. All types derive Serde.
 
 use {
     chrono::{DateTime, Utc},

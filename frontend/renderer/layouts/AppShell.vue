@@ -86,8 +86,8 @@ const _closeApplication = () => {
 }
 
 .toolbar button:not(.window-control-button) {
-  @apply bg-transparent p-1.5 text-zinc-300 rounded-lg cursor-pointer;
-  @apply hover:text-white hover:bg-zinc-700;
+  @apply bg-transparent p-1.5 text-ctp-subtext0 rounded-lg cursor-pointer;
+  @apply hover:text-ctp-text hover:bg-ctp-surface1;
   @apply transition duration-150 ease-in;
 }
 
@@ -96,11 +96,11 @@ const _closeApplication = () => {
 }
 
 .window-control-button {
-  @apply bg-transparent p-2.5 cursor-pointer;
-  @apply hover:bg-zinc-700;
+  @apply bg-transparent p-2.5 cursor-pointer text-ctp-text;
+  @apply hover:bg-ctp-surface1;
 
   &.quit {
-    @apply hover:bg-red-500;
+    @apply hover:bg-ctp-red-900;
   }
 }
 

@@ -10,6 +10,29 @@ use {
     serde::{Deserialize, Serialize}
 };
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum ETheme
+{
+    Dark,
+    Light,
+    System
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SSettings
+{
+    pub user_id:               String,
+    pub theme:                 ETheme,
+    pub notifications_enabled: bool,
+    pub notification_sound:    bool,
+    pub auto_sync_enabled:     bool,
+    pub sync_interval_secs:    u64,
+    pub show_avatars:          bool,
+    pub reply_to_all_default:  bool,
+    pub created_at:            DateTime<Utc>,
+    pub updated_at:            DateTime<Utc>
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct SUser
 {
@@ -55,6 +78,18 @@ pub struct SAccount
     pub updated_at:   DateTime<Utc>
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub enum EMailboxType
+{
+    Inbox,
+    Sent,
+    Drafts,
+    Trash,
+    Archive,
+    Spam,
+    Custom
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SMailbox
 {
@@ -62,6 +97,7 @@ pub struct SMailbox
     pub account_id:   String,
     pub name:         String,
     pub imap_name:    String,
+    pub mailbox_type: EMailboxType,
     pub unread_count: u32,
     pub total_count:  u32,
     pub last_sync:    Option<DateTime<Utc>>,

@@ -10,21 +10,25 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum EAppError
 {
-    #[error("Database error: {0}")]
-    DatabaseError(String),
-
-    #[error("Record not found: {0}")]
-    NotFound(String),
-
+    // Auth
     #[error("Invalid credentials")]
     InvalidCredentials,
-
-    #[error("JWT token expired")]
-    TokenExpired,
 
     #[error("Unauthorized")]
     Unauthorized,
 
+    #[error("JWT token expired")]
+    TokenExpired,
+
+    // Validation
+    #[error("Validation error: {0}")]
+    ValidationError(String),
+
+    // Not found
+    #[error("Record not found: {0}")]
+    NotFound(String),
+
+    // Protocol
     #[error("IMAP connection failed: {0}")]
     ImapConnectionError(String),
 
@@ -34,8 +38,12 @@ pub enum EAppError
     #[error("Mail parsing error: {0}")]
     MailParsingError(String),
 
-    #[error("Validation error: {0}")]
-    ValidationError(String),
+    // Server
+    #[error("Database error: {0}")]
+    DatabaseError(String),
+
+    #[error("Configuration error: {0}")]
+    ConfigError(String),
 
     #[error("Internal server error: {0}")]
     InternalError(String)

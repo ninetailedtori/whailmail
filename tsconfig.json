@@ -10,5 +10,10 @@
     "src/**/*.vue",
     "auto-imports.d.ts",
     "components.d.ts"
-  ]
+  ],
+  "compilerOptions": {
+    "module": "nodenext",
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  }
 }

@@ -1,17 +1,24 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
   "include": [
-    "src/renderer/src/env.d.ts",
-    "src/renderer/src/**/*",
-    "src/renderer/src/**/*.vue",
+    "src/renderer/env.d.ts",
+    "src/renderer/**/*",
+    "src/renderer/**/*.vue",
     "src/preload/*.d.ts"
   ],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@renderer/*": ["src/renderer/src/*"],
-      "#build/ui/*": ["./node_modules/.nuxt-ui/ui/*"]
+      "@resources/*": ["resources/*"],
+      "@/*": ["src/renderer/*"],
+      "@stores/*": ["src/renderer/stores/*"],
+      "@components/*": ["src/renderer/components/*"],
+      "@pages/*": ["src/renderer/pages/*"],
+      "@layouts/*": ["src/renderer/layouts/*"],
+      "@router/*": ["src/renderer/router/*"],
+      "@styles/*": ["src/renderer/styles/*"],
+      "@shared/*": ["src/shared/*"]
     }
   },
   "vueCompilerOptions": {

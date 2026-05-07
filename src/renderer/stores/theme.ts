@@ -1,38 +1,96 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
+// stores/theme.ts
+import "@catppuccin/tailwindcss/mocha.css";
+import { onMounted, ref } from "vue";
 
-export type CatppuccinFlavor = "latte" | "frappe" | "macchiato" | "mocha";
+export type Flavour = "mocha" | "frappe" | "macchiato" | "latte";
+export type Accent =
+  | "rosewater"
+  | "flamingo"
+  | "pink"
+  | "mauve"
+  | "red"
+  | "maroon"
+  | "peach"
+  | "yellow"
+  | "green"
+  | "teal"
+  | "sky"
+  | "sapphire"
+  | "blue"
+  | "lavender";
 
-const FLAVORS: CatppuccinFlavor[] = ["latte", "frappe", "macchiato", "mocha"];
-const STORAGE_KEY = "ctp-flavor";
+const currentFlavour = ref<Flavour>("mocha");
+const currentAccent = ref<Accent>("blue");
 
-export const useThemeStore = defineStore("theme", () => {
-  const currentFlavor = ref<CatppuccinFlavor>("macchiato");
+const accentColours = [
+  "rosewater",
+  "flamingo",
+  "pink",
+  "mauve",
+  "red",
+  "maroon",
+  "peach",
+  "yellow",
+  "green",
+  "teal",
+  "sky",
+  "sapphire",
+  "blue",
+  "lavender",
+  "text",
+  "subtext1",
+  "subtext0",
+  "overlay2",
+  "overlay1",
+  "overlay0",
+  "surface2",
+  "surface1",
+  "surface0",
+  "base",
+  "mantle",
+  "crust",
+] as const;
 
-  const loadTheme = (): void => {
-    const saved = localStorage.getItem(STORAGE_KEY) as CatppuccinFlavor | null;
-    if (saved && FLAVORS.includes(saved)) {
-      currentFlavor.value = saved;
-    }
-    applyTheme(currentFlavor.value);
+export const useTheme = () => {
+  const setFlavour = async (flavour: Flavour) => {
+    currentFlavour.value = flavour;
+    document.documentElement.classList.remove(
+      "latte",
+      "frappe",
+      "macchiato",
+      "mocha"
+    );
+    document.documentElement.classList.add(flavour);
+    localStorage.setItem("theme-flavour", flavour);
   };
 
-  const applyTheme = (flavor: CatppuccinFlavor): void => {
-    const html = document.documentElement;
-    FLAVORS.forEach((f) => html.classList.remove(`ctp-${f}`));
-    html.classList.add(`ctp-${flavor}`);
-    localStorage.setItem(STORAGE_KEY, flavor);
+  const setAccent = async (accent: Accent) => {
+    currentAccent.value = accent;
+    document.documentElement.style.setProperty(
+      "--ctp-accent",
+      `var(--ctp-${accent})`
+    );
+    localStorage.setItem("theme-accent", accent);
   };
 
-  const setFlavor = (flavor: CatppuccinFlavor): void => {
-    currentFlavor.value = flavor;
-    applyTheme(flavor);
+  const hydrate = async () => {
+    const savedFlavour = localStorage.getItem(
+      "theme-flavour"
+    ) as Flavour | null;
+    if (savedFlavour) await setFlavour(savedFlavour);
+
+    const savedAccent = localStorage.getItem("theme-accent") as Accent | null;
+    if (savedAccent) await setAccent(savedAccent);
   };
+
+  onMounted(() => hydrate());
 
   return {
-    currentFlavor,
-    flavors: FLAVORS,
-    setFlavor,
-    loadTheme,
+    currentFlavour,
+    currentAccent,
+    setFlavour,
+    setAccent,
+    flavours: ["latte", "frappe", "macchiato", "mocha"] as const,
+    accentColours,
   };
-});
+};

@@ -1,17 +1,7 @@
 /* SCSS Modules */
-@use "tailwindcss";
-@use "@nuxt/ui";
-
-/* CSS Imports */
-// @import "@catppuccin/tailwindcss/latte.css" layer(theme-latte);
-@import "@catppuccin/tailwindcss/frappe.css" layer(theme-frappe);
-@import "@catppuccin/tailwindcss/macchiato.css" layer(theme-macchiato);
-@import "@catppuccin/tailwindcss/mocha.css" layer(theme-mocha);
-
-/* Tailwind Directives */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "@nuxt/ui";
+@import "@catppuccin/tailwindcss/macchiato.css";
 
 /* Main Styling */
 .heading {
@@ -32,7 +22,7 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-image: url("./wavy-lines.svg");
+  background-image: url("@resources/wavy-lines.svg");
   background-size: cover;
   user-select: none;
 }

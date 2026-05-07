@@ -7,7 +7,7 @@ import pluginOxlint from "eslint-plugin-oxlint";
 import pluginVue from "eslint-plugin-vue";
 import { globalIgnores } from "eslint/config";
 
-import eslintrcImport from "./.eslintrc-auto-import.json" with { type: "json" };
+import eslintrcImport from "./.eslintrc-auto-import.json";
 
 // To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
 // import { configureVueProject } from '@vue/eslint-config-typescript'
@@ -29,6 +29,7 @@ export default defineConfigWithVueTs(
   {
     name: "app/vue-rule-overrides",
     rules: {
+      "@typescript-eslint/no-unused-vars": "off",
       "vue/multi-word-component-names": "off",
       "vue/require-default-prop": "off",
       "vue/block-lang": [

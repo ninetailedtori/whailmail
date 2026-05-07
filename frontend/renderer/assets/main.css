@@ -35,8 +35,6 @@
 
 .__no_drag {
   app-region: no-drag;
-  padding: 0 !important;
-  margin: 0 !important;
   user-select: none;
 }
 

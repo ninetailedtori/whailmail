@@ -29,9 +29,9 @@ const _closeApplication = () => {
   <div class="dragger">
     <nav class="navbar">
       <div class="toolbar">
-        <Toolbar class="rounded-none border-0! border-b! bg-zinc-800 pl-2!">
+        <Toolbar class="border-0! border-b!">
           <template #start>
-            <div class="__no_drag inline-flex gap-2">
+            <div class="__no_drag inline-flex gap-2 ml-4">
               <button type="button" v-tooltip.bottom="'Fetch new messages'">
                 <cloud-download class="toolbar-icons" />
               </button>
@@ -47,18 +47,26 @@ const _closeApplication = () => {
             </div>
           </template>
 
+          <template #center>
+            <div class="__no_drag my-2">
+              <input type="search" placeholder="Search..."
+                     class="border border-ctp-surface1 bg-ctp-surface0 text-ctp-text rounded-lg px-3 py-1 w-96
+focus:outline-none focus:ring-2 focus:ring-ctp-blue" />
+            </div>
+          </template>
+
 
           <template #end>
             <div class="__no_drag">
-              <div class="inline-flex gap-2">
-                <button type="button" class="window-control-button" @click="_minimizeWindow">
-                  <minus class="window-control-icon" />
+              <div class="inline-flex gap-2 mr-4">
+                <button type="button" class="window-control-button minimize"
+                        @click="_minimizeWindow">
                 </button>
-                <button type="button" class="window-control-button" @click="_maximizeWindow">
-                  <square class="window-control-icon" />
+                <button type="button" class="window-control-button maximize"
+                        @click="_maximizeWindow">
                 </button>
-                <button type="button" class="window-control-button quit" @click="_closeApplication">
-                  <x class="window-control-icon size-4!" />
+                <button type="button" class="window-control-button quit"
+                        @click="_closeApplication">
                 </button>
               </div>
             </div>
@@ -82,7 +90,7 @@ const _closeApplication = () => {
 @reference './../assets/main.css';
 
 .toolbar {
-  @apply w-full leading-0!;
+  @apply w-full;
 }
 
 .toolbar button:not(.window-control-button) {
@@ -92,24 +100,29 @@ const _closeApplication = () => {
 }
 
 .toolbar-icons {
-  @apply size-4;
+  @apply size-5;
 }
 
 .window-control-button {
-  @apply bg-transparent p-2.5 cursor-pointer text-ctp-text;
+  @apply bg-ctp-surface0;
+  @apply p-2 my-2 rounded-full cursor-pointer text-ctp-text;
   @apply hover:bg-ctp-surface1;
 
   &.quit {
-    @apply hover:bg-ctp-red-900;
+    @apply bg-ctp-red-700 hover:bg-ctp-red-950;
+  }
+
+  &.minimize {
+    @apply bg-ctp-yellow-700 hover:bg-ctp-yellow-950;
+  }
+
+  &.maximize {
+    @apply bg-ctp-green-700 hover:bg-ctp-green-950;
   }
 }
 
-.window-control-icon {
-  @apply size-3 rounded-none;
-}
-
 main {
-  min-height: calc(100vh - 37px);
+ /* min-height: calc(100vh - 42px);*/
   overflow: auto;
 }
 </style>

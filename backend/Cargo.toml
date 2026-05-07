@@ -1,83 +1,86 @@
 [workspace]
-members = [
-  "crates/whailmail-common",
-  "crates/whailmail-db",
-  "crates/whailmail-api",
-  "crates/whailmail-smtp",
-  "crates/whailmail-imap",
-  "crates/whailmail-indexer",
-  "crates/whailmail-filters", "crates/whailmail-common/whailmail-common",
-]
-resolver = "2"
+  members = [
+    "crates/whailmail-common",
+    "crates/whailmail-db",
+    "crates/whailmail-api",
+    "crates/whailmail-smtp",
+    "crates/whailmail-imap",
+    "crates/whailmail-indexer",
+    "crates/whailmail-filters",
+  ]
+  resolver = "2"
 
-[workspace.package]
-version = "0.1.0"
-edition = "2024"
-authors = ["WhailMail Contributors"]
+  [workspace.package]
+    version      = "0.1.0"
+    edition      = "2024"
+    license      = "GPL-3.0+"
+    license-file = "../COPYING"
+    authors      = [ "WhailMail Contributors" ]
 
-[workspace.dependencies]
-# Async runtime
-tokio = { version = "1.52.2", features = ["full"] }
-tokio-util = "0.7.18"
+  [workspace.dependencies]
+    # Async runtime
+    tokio      = { version = "1.52.2", features = [ "full" ] }
+    tokio-util = "0.7.18"
 
-# Web framework
-axum = "0.8.9"
-tower = "0.5.3"
-tower-http = { version = "0.6.10", features = ["cors", "trace"] }
-hyper = "1.9.0"
+    # Web framework
+    axum       = "0.8.9"
+    tower      = "0.5.3"
+    tower-http = { version = "0.6.10", features = [ "cors", "trace" ] }
+    hyper      = "1.9.0"
 
-# Database
-sqlx = { version = "0.9.0-alpha.1", features = [
-  "runtime-tokio-native-tls",
-  "sqlite",
-  "postgres",
-  "uuid",
-  "chrono",
-] }
+    # Database
+    sqlx = { version = "0.9.0-alpha.1", features = [
+      "runtime-tokio-native-tls",
+      "sqlite",
+      "postgres",
+      "uuid",
+      "chrono",
+    ] }
 
-# Serialization
-serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.149"
+    # Serialization
+    serde      = { version = "1.0.228", features = [ "derive" ] }
+    serde_json = "1.0.149"
 
-# Auth
-jsonwebtoken = "10.3.0"
-uuid = { version = "1.23.1", features = ["v4", "serde"] }
+    # Auth
+    jsonwebtoken = "10.3.0"
+    uuid         = { version = "1.23.1", features = [ "v4", "serde" ] }
 
-# Email protocols
-imap = "3.0.0-alpha.15"
-lettre = { version = "0.11.21", features = ["smtp", "builder"] }
-mail-parser = "0.11.3"
-mailparse = "0.16.1"
+    # Email protocols
+    imap        = "3.0.0-alpha.15"
+    lettre      = { version = "0.11.21", features = [ "smtp", "builder" ] }
+    mail-parser = "0.11.3"
+    mailparse   = "0.16.1"
 
-# Indexing
-tantivy = "0.26.1"
+    # Indexing
+    tantivy = "0.26.1"
 
-# Config
-dotenv = "0.15.0"
-config = "0.15.22"
+    # Config
+    dotenv = "0.15.0"
+    config = "0.15.22"
 
-# Errors
-anyhow = "1.0.102"
-thiserror = "2.0.18"
+    # Errors
+    anyhow    = "1.0.102"
+    thiserror = "2.0.18"
 
-# Logging
-tracing = "0.1.44"
-tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+    # Logging
+    tracing            = "0.1.44"
+    tracing-subscriber = { version = "0.3.23", features = [ "env-filter" ] }
 
-# TZDB
-chrono = { version = "0.4.44", features = ["serde"] }
+    # TZDB
+    chrono = { version = "0.4.44", features = [ "serde" ] }
 
-# WebSocket :3
-tokio-tungstenite = "0.29.0"
-futures = "0.3.32"
+    # WebSocket :3
+    tokio-tungstenite = "0.29.0"
+    futures           = "0.3.32"
 
-# Utils
-regex = "1.12.3"
-base64 = "0.22.1"
-reqwest = { version = "0.13.3", features = ["json"] }
-hex = "0.4.3"
-sha2 = "0.11.0"
-bcrypt = "0.19.1"
+    # Utils
+    regex   = "1.12.3"
+    base64  = "0.22.1"
+    reqwest = { version = "0.13.3", features = [ "json" ] }
+    hex     = "0.4.3"
+    sha2    = "0.11.0"
+    bcrypt  = "0.19.1"
+    dirs    = "6.0.0"
 
-[workspace.lints.rust]
-unsafe_code = "forbid"
+  [workspace.lints.rust]
+    unsafe_code = "forbid"

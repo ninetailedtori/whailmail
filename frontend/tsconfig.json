@@ -5,9 +5,9 @@
     { "path": "./tsconfig.web.json" }
   ],
   "include": [
-    "frontend/**/*.ts",
-    "frontend/**/*.tsx",
-    "frontend/**/*.vue",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.vue",
     "auto-imports.d.ts",
     "components.d.ts"
   ],

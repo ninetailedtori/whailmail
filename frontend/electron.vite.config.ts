@@ -12,7 +12,7 @@ import VueRouter from "vue-router/vite";
 
 const sharedAliases = {
   "@resources": resolve("./resources"),
-  "@shared": resolve("./frontend/shared"),
+  "@shared": resolve("./shared"),
 };
 
 export default defineConfig({
@@ -34,19 +34,19 @@ export default defineConfig({
     resolve: {
       alias: {
         ...sharedAliases,
-        "@": resolve("./frontend/renderer"),
-        "@stores": resolve("./frontend/renderer/stores"),
-        "@components": resolve("./frontend/renderer/components"),
-        "@pages": resolve("./frontend/renderer/pages"),
-        "@layouts": resolve("./frontend/renderer/layouts"),
-        "@router": resolve("./frontend/renderer/router"),
-        "@styles": resolve("./frontend/renderer/styles"),
+        "@": resolve("./renderer"),
+        "@stores": resolve("./renderer/stores"),
+        "@components": resolve("./renderer/components"),
+        "@pages": resolve("./renderer/pages"),
+        "@layouts": resolve("./renderer/layouts"),
+        "@router": resolve("./renderer/router"),
+        "@styles": resolve("./renderer/styles"),
       },
     },
     plugins: [
       tailwindcss(),
       VueRouter({
-        dts: resolve("frontend/renderer/typed-router.d.ts"),
+        dts: resolve("renderer/typed-router.d.ts"),
       }),
       vue(),
       vueDevTools(),
@@ -54,7 +54,7 @@ export default defineConfig({
         router: true,
         components: {
           resolvers: [IconsResolver()],
-          dirs: ["./frontend/renderer/components"],
+          dirs: ["./renderer/components"],
         },
         ui: {
           colors: {
@@ -70,8 +70,8 @@ export default defineConfig({
         autoImport: {
           imports: ["vue", "vue-router", "pinia"],
           dirs: [
-            "./frontend/renderer/composables",
-            "./frontend/renderer/utils",
+            "./renderer/composables",
+            "./renderer/utils",
           ],
           eslintrc: {
             enabled: true,

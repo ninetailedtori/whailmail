@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
-# SPDX-FileContributor: whailmail contributors
+# SPDX-FileContributor: WhailMail contributors
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -14,11 +14,12 @@ path = [
   "meson.build",
   "meson_options.txt",
   "frontend/**",
+  "backend/**",
   "include/**",
   "data/**",
 ]
 SPDX-FileCopyrightText = "2026 ninetailedtori <ninetailedtori@uwu.gal>"
-SPDX-FileContributor = "whailmail contributors"
+SPDX-FileContributor = "WhailMail contributors"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
 [[annotations]]
@@ -30,5 +31,5 @@ SPDX-License-Identifier = "GPL-3.0-or-later"
 [[annotations]]
 path = ["subprojects/*.wrap", "subprojects/packagefiles/**"]
 SPDX-FileCopyrightText = "2026 ninetailedtori <ninetailedtori@uwu.gal>"
-SPDX-FileContributor = "whailmail contributors"
+SPDX-FileContributor = "WhailMail contributors"
 SPDX-License-Identifier = "GPL-3.0-or-later"

@@ -9,9 +9,9 @@
   "sortTailwindcss": true,
   "sortPackageJson": true,
   "ignorePatterns": [
-    "frontend/renderer/auto-imports.d.ts",
-    "frontend/renderer/components.d.ts",
-    "frontend/renderer/typed-router.d.ts",
+    "renderer/auto-imports.d.ts",
+    "renderer/components.d.ts",
+    "renderer/typed-router.d.ts",
     ".eslintrc-auto-import.json",
     "pnpm-lock.yaml"
   ]

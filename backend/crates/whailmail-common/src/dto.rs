@@ -7,6 +7,9 @@
 
 //! Data-Transfer Object
 
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SSignupReq {
     pub email: String,

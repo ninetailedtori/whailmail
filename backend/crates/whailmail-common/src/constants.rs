@@ -7,6 +7,14 @@
 
 //! Constants
 
+pub mod app {
+    pub const NAME: &str = "whailmail";
+    pub const FANCY_NAME: &str = "WhailMail";
+    pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+    pub const PROTOCOL_VERSION: &str = "1.0.0";
+    pub const DB_SCHEMA_VERSION: u32 = 1;
+}
+
 pub mod api {
     pub const API_VERSION: &str = "v1";
     pub const BASE_PATH: &str = "/api/v1";
@@ -87,232 +95,148 @@ pub mod rates {
 pub mod paths {
     use std::path::PathBuf;
 
-    const APP_NAME: &str = "whailmail";
-
-    #[cfg(target_os = "windows")]
-    pub fn data_dir() -> PathBuf {
-        let base = std::env::var("APPDATA")
-            .unwrap_or_else(|_| std::env::var("LOCALAPPDATA").unwrap_or_else(|_| ".".to_string()));
-        PathBuf::from(base).join(APP_NAME).join("data")
+    enum DirType {
+        Data,
+        Config,
+        Cache,
+        Log,
     }
 
-    #[cfg(target_os = "windows")]
-    pub fn config_dir() -> PathBuf {
-        let base = std::env::var("APPDATA")
-            .unwrap_or_else(|_| std::env::var("LOCALAPPDATA").unwrap_or_else(|_| ".".to_string()));
-        PathBuf::from(base).join(APP_NAME).join("config")
-    }
+    fn get_base_dir(dir_type: DirType) -> PathBuf {
+        #[cfg(target_os = "windows")]
+        {
+            let env_var = match dir_type {
+                DirType::Cache | DirType::Log => "LOCALAPPDATA",
+                _ => "APPDATA",
+            };
+            let fallback = match dir_type {
+                DirType::Cache | DirType::Log => "APPDATA",
+                _ => "LOCALAPPDATA",
+            };
+            let base = std::env::var(env_var)
+                .or_else(|_| std::env::var(fallback))
+                .unwrap_or_else(|_| ".".to_string());
+            PathBuf::from(base)
+        }
 
-    #[cfg(target_os = "windows")]
-    pub fn cache_dir() -> PathBuf {
-        let base = std::env::var("LOCALAPPDATA")
-            .unwrap_or_else(|_| std::env::var("APPDATA").unwrap_or_else(|_| ".".to_string()));
-        PathBuf::from(base).join(APP_NAME).join("cache")
-    }
+        #[cfg(target_os = "macos")]
+        {
+            match dir_type {
+                DirType::Data => dirs::data_local_dir()
+                    .unwrap_or_else(|| dirs::home_dir().unwrap_or_default().join(".local/share")),
+                DirType::Config => dirs::config_dir().unwrap_or_else(|| {
+                    dirs::home_dir()
+                        .unwrap_or_default()
+                        .join("Library/Preferences")
+                }),
+                DirType::Cache => dirs::cache_dir()
+                    .unwrap_or_else(|| dirs::home_dir().unwrap_or_default().join("Library/Caches")),
+                DirType::Log => dirs::home_dir().unwrap_or_default().join("Library/Logs"),
+            }
+        }
 
-    #[cfg(target_os = "windows")]
-    pub fn log_dir() -> PathBuf {
-        let base = std::env::var("LOCALAPPDATA")
-            .unwrap_or_else(|_| std::env::var("APPDATA").unwrap_or_else(|_| ".".to_string()));
-        PathBuf::from(base).join(APP_NAME).join("logs")
-    }
+        #[cfg(target_os = "ios")]
+        {
+            let app_id = crate::constants::app::NAME;
+            match dir_type {
+                DirType::Data => PathBuf::from(format!(
+                    "/var/mobile/Containers/Data/Application/{}/Documents",
+                    app_id
+                )),
+                DirType::Config => PathBuf::from(format!(
+                    "/var/mobile/Containers/Data/Application/{}/Library",
+                    app_id
+                )),
+                DirType::Cache => PathBuf::from(format!(
+                    "/var/mobile/Containers/Data/Application/{}/Library/Caches",
+                    app_id
+                )),
+                DirType::Log => PathBuf::from(format!(
+                    "/var/mobile/Containers/Data/Application/{}/Documents/Logs",
+                    app_id
+                )),
+            }
+        }
 
-    #[cfg(target_os = "macos")]
-    pub fn data_dir() -> PathBuf {
-        dirs::data_local_dir()
-            .unwrap_or_else(|| dirs::home_dir().unwrap_or_default().join(".local/share"))
-            .join(APP_NAME)
-    }
+        #[cfg(target_os = "android")]
+        {
+            match dir_type {
+                DirType::Data => {
+                    PathBuf::from(format!("/data/data/{}/files", crate::constants::app::NAME))
+                }
+                DirType::Config => PathBuf::from(format!(
+                    "/data/data/{}/shared_prefs",
+                    crate::constants::app::NAME
+                )),
+                DirType::Cache => {
+                    PathBuf::from(format!("/data/data/{}/cache", crate::constants::app::NAME))
+                }
+                DirType::Log => {
+                    PathBuf::from(format!("/data/data/{}/logs", crate::constants::app::NAME))
+                }
+            }
+        }
 
-    #[cfg(target_os = "macos")]
-    pub fn config_dir() -> PathBuf {
-        dirs::config_dir()
-            .unwrap_or_else(|| {
+        #[cfg(any(
+            target_os = "linux",
+            target_os = "freebsd",
+            target_os = "dragonfly",
+            target_os = "openbsd",
+            target_os = "netbsd"
+        ))]
+        {
+            let (env_var, fallback) = match dir_type {
+                DirType::Data => ("XDG_DATA_HOME", ".local/share"),
+                DirType::Config => ("XDG_CONFIG_HOME", ".config"),
+                DirType::Cache => ("XDG_CACHE_HOME", ".cache"),
+                DirType::Log => ("XDG_STATE_HOME", ".local/state"),
+            };
+
+            let base = std::env::var(env_var).unwrap_or_else(|_| {
                 dirs::home_dir()
                     .unwrap_or_default()
-                    .join("Library/Preferences")
-            })
-            .join(APP_NAME)
+                    .join(fallback)
+                    .to_string_lossy()
+                    .to_string()
+            });
+            PathBuf::from(base)
+        }
     }
 
-    #[cfg(target_os = "macos")]
-    pub fn cache_dir() -> PathBuf {
-        dirs::cache_dir()
-            .unwrap_or_else(|| dirs::home_dir().unwrap_or_default().join("Library/Caches"))
-            .join(APP_NAME)
-    }
-
-    #[cfg(target_os = "macos")]
-    pub fn log_dir() -> PathBuf {
-        dirs::home_dir()
-            .unwrap_or_default()
-            .join("Library/Logs")
-            .join(APP_NAME)
-    }
-
-    #[cfg(target_os = "ios")]
     pub fn data_dir() -> PathBuf {
-        PathBuf::from(format!(
-            "/var/mobile/Containers/Data/Application/{}/Documents",
-            APP_NAME
-        ))
+        get_base_dir(DirType::Data).join(crate::constants::app::NAME)
     }
 
-    #[cfg(target_os = "ios")]
     pub fn config_dir() -> PathBuf {
-        PathBuf::from(format!(
-            "/var/mobile/Containers/Data/Application/{}/Library",
-            APP_NAME
-        ))
+        get_base_dir(DirType::Config).join(crate::constants::app::NAME)
     }
 
-    #[cfg(target_os = "ios")]
     pub fn cache_dir() -> PathBuf {
-        PathBuf::from(format!(
-            "/var/mobile/Containers/Data/Application/{}/Library/Caches",
-            APP_NAME
-        ))
+        get_base_dir(DirType::Cache).join(crate::constants::app::NAME)
     }
 
-    #[cfg(target_os = "ios")]
     pub fn log_dir() -> PathBuf {
-        data_dir().join("Logs")
-    }
-
-    #[cfg(target_os = "linux")]
-    pub fn data_dir() -> PathBuf {
-        let base = std::env::var("XDG_DATA_HOME").unwrap_or_else(|_| {
-            dirs::home_dir()
-                .unwrap_or_default()
-                .join(".local/share")
-                .to_string_lossy()
-                .to_string()
-        });
-        PathBuf::from(base).join(APP_NAME)
-    }
-
-    #[cfg(target_os = "linux")]
-    pub fn config_dir() -> PathBuf {
-        let base = std::env::var("XDG_CONFIG_HOME").unwrap_or_else(|_| {
-            dirs::home_dir()
-                .unwrap_or_default()
-                .join(".config")
-                .to_string_lossy()
-                .to_string()
-        });
-        PathBuf::from(base).join(APP_NAME)
-    }
-
-    #[cfg(target_os = "linux")]
-    pub fn cache_dir() -> PathBuf {
-        let base = std::env::var("XDG_CACHE_HOME").unwrap_or_else(|_| {
-            dirs::home_dir()
-                .unwrap_or_default()
-                .join(".cache")
-                .to_string_lossy()
-                .to_string()
-        });
-        PathBuf::from(base).join(APP_NAME)
-    }
-
-    #[cfg(target_os = "linux")]
-    pub fn log_dir() -> PathBuf {
-        let base = std::env::var("XDG_STATE_HOME").unwrap_or_else(|_| {
-            dirs::home_dir()
-                .unwrap_or_default()
-                .join(".local/state")
-                .to_string_lossy()
-                .to_string()
-        });
-        PathBuf::from(base).join(APP_NAME).join("log")
-    }
-
-    #[cfg(target_os = "android")]
-    pub fn data_dir() -> PathBuf {
-        PathBuf::from(format!("/data/data/{}/files", APP_NAME))
-    }
-
-    #[cfg(target_os = "android")]
-    pub fn config_dir() -> PathBuf {
-        PathBuf::from(format!("/data/data/{}/shared_prefs", APP_NAME))
-    }
-
-    #[cfg(target_os = "android")]
-    pub fn cache_dir() -> PathBuf {
-        PathBuf::from(format!("/data/data/{}/cache", APP_NAME))
-    }
-
-    #[cfg(target_os = "android")]
-    pub fn log_dir() -> PathBuf {
-        PathBuf::from(format!("/data/data/{}/logs", APP_NAME))
-    }
-
-    #[cfg(any(
-        target_os = "freebsd",
-        target_os = "dragonfly",
-        target_os = "openbsd",
-        target_os = "netbsd"
-    ))]
-    pub fn data_dir() -> PathBuf {
-        let base = std::env::var("XDG_DATA_HOME").unwrap_or_else(|_| {
-            dirs::home_dir()
-                .unwrap_or_default()
-                .join(".local/share")
-                .to_string_lossy()
-                .to_string()
-        });
-        PathBuf::from(base).join(APP_NAME)
-    }
-
-    #[cfg(any(
-        target_os = "freebsd",
-        target_os = "dragonfly",
-        target_os = "openbsd",
-        target_os = "netbsd"
-    ))]
-    pub fn config_dir() -> PathBuf {
-        let base = std::env::var("XDG_CONFIG_HOME").unwrap_or_else(|_| {
-            dirs::home_dir()
-                .unwrap_or_default()
-                .join(".config")
-                .to_string_lossy()
-                .to_string()
-        });
-        PathBuf::from(base).join(APP_NAME)
-    }
-
-    #[cfg(any(
-        target_os = "freebsd",
-        target_os = "dragonfly",
-        target_os = "openbsd",
-        target_os = "netbsd"
-    ))]
-    pub fn cache_dir() -> PathBuf {
-        let base = std::env::var("XDG_CACHE_HOME").unwrap_or_else(|_| {
-            dirs::home_dir()
-                .unwrap_or_default()
-                .join(".cache")
-                .to_string_lossy()
-                .to_string()
-        });
-        PathBuf::from(base).join(APP_NAME)
-    }
-
-    #[cfg(any(
-        target_os = "freebsd",
-        target_os = "dragonfly",
-        target_os = "openbsd",
-        target_os = "netbsd"
-    ))]
-    pub fn log_dir() -> PathBuf {
-        let base = std::env::var("XDG_STATE_HOME").unwrap_or_else(|_| {
-            dirs::home_dir()
-                .unwrap_or_default()
-                .join(".local/state")
-                .to_string_lossy()
-                .to_string()
-        });
-        PathBuf::from(base).join(APP_NAME).join("log")
+        let base = get_base_dir(DirType::Log);
+        #[cfg(any(
+            target_os = "linux",
+            target_os = "freebsd",
+            target_os = "dragonfly",
+            target_os = "openbsd",
+            target_os = "netbsd"
+        ))]
+        {
+            base.join(crate::constants::app::NAME).join("log")
+        }
+        #[cfg(not(any(
+            target_os = "linux",
+            target_os = "freebsd",
+            target_os = "dragonfly",
+            target_os = "openbsd",
+            target_os = "netbsd"
+        )))]
+        {
+            base.join(crate::constants::app::NAME)
+        }
     }
 
     pub fn certs_dir() -> PathBuf {
@@ -386,16 +310,9 @@ pub mod headers {
 }
 
 pub mod defaults {
-    pub const DEFAULT_FROM_NAME: &str = "WhailMail";
-    pub const DEFAULT_LANGUAGE: &str = "en";
-    pub const DEFAULT_TIMEZONE: &str = "UTC";
-    pub const DEFAULT_THEME: &str = "catppuccin-macchiato";
-}
-
-pub mod versions {
-    pub const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
-    pub const PROTOCOL_VERSION: &str = "1.0.0";
-    pub const DB_SCHEMA_VERSION: u32 = 1;
+    pub const LANG: &str = "en";
+    pub const TIMEZONE: &str = "UTC";
+    pub const THEME: &str = "catppuccin-macchiato";
 }
 
 pub mod cache {

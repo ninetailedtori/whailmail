@@ -13,6 +13,6 @@ pub mod dto;
 pub mod error;
 pub mod types;
 
-pub use config::Config;
-pub use error::{AppError, AppResult};
-pub use models::*;
+pub use config::SConfig;
+pub use error::{EAppError, RAppResult};
+pub use types::*;

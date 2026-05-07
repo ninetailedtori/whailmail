@@ -7,6 +7,9 @@
 
 //! Types
 
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct SUser {
     pub id: String,

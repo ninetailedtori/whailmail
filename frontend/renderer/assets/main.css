@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2026 2026-Present ninetailedtori <ninetailedtori@uwu.gal>
+ * SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
  * SPDX-FileContributor: WhailMail contributors
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
@@ -32,8 +32,6 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-image: url("@resources/wavy-lines.svg");
-  background-size: cover;
   user-select: none;
 }
 

@@ -5,13 +5,4 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-export interface IMessage<T = never> {
-  channel: string;
-  data: T;
-}
-
-export interface SMessage<T = never> {
-  type: string;
-  payload: T;
-  requestId?: string;
-}
+pub mod smtp {}

@@ -29,7 +29,8 @@ export default defineConfigWithVueTs(
   {
     name: "app/vue-rule-overrides",
     rules: {
-      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-empty-object-type": "warn",
       "vue/multi-word-component-names": "off",
       "vue/require-default-prop": "off",
       "vue/block-lang": [

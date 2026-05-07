@@ -6,6 +6,7 @@ import ThemeDropdown from "./components/ThemeDropdown.vue";
 const platform = ref("unknown");
 
 onMounted(async () => {
+  // @ts-expect-error (define in dts)
   platform.value = await window.electron.ipcRenderer.invoke("get-platform");
 });
 </script>

@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname "$0")/h"
 
-pnpm run lint && pnpm run typecheck
+cd frontend && pnpm run lint && pnpm run typecheck && pnpm run format

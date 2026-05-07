@@ -69,10 +69,7 @@ export default defineConfig({
         },
         autoImport: {
           imports: ["vue", "vue-router", "pinia"],
-          dirs: [
-            "./renderer/composables",
-            "./renderer/utils",
-          ],
+          dirs: ["./renderer/composables", "./renderer/utils"],
           eslintrc: {
             enabled: true,
           },

@@ -17,6 +17,11 @@ const sharedAliases = {
 
 export default defineConfig({
   main: {
+    build: {
+      lib: {
+        entry: "main/index.ts",
+      },
+    },
     resolve: {
       alias: {
         ...sharedAliases,
@@ -24,6 +29,11 @@ export default defineConfig({
     },
   },
   preload: {
+    build: {
+      lib: {
+        entry: "preload/index.ts",
+      },
+    },
     resolve: {
       alias: {
         ...sharedAliases,
@@ -31,16 +41,22 @@ export default defineConfig({
     },
   },
   renderer: {
+    root: "renderer",
+    build: {
+      rollupOptions: {
+        input: "renderer/index.html",
+      },
+    },
     resolve: {
       alias: {
         ...sharedAliases,
         "@": resolve("./renderer"),
-        "@stores": resolve("./renderer/stores"),
+        "@assets": resolve("./renderer/assets"),
         "@components": resolve("./renderer/components"),
-        "@pages": resolve("./renderer/pages"),
         "@layouts": resolve("./renderer/layouts"),
+        "@pages": resolve("./renderer/pages"),
         "@router": resolve("./renderer/router"),
-        "@styles": resolve("./renderer/styles"),
+        "@stores": resolve("./renderer/stores"),
       },
     },
     plugins: [

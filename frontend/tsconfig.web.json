@@ -10,15 +10,15 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@resources/*": ["resources/*"],
       "@/*": ["renderer/*"],
-      "@stores/*": ["renderer/stores/*"],
-      "@components/*": ["renderer/components/*"],
-      "@pages/*": ["renderer/pages/*"],
-      "@layouts/*": ["renderer/layouts/*"],
-      "@router/*": ["renderer/router/*"],
       "@assets/*": ["renderer/assets/*"],
-      "@shared/*": ["shared/*"]
+      "@components/*": ["renderer/components/*"],
+      "@layouts/*": ["renderer/layouts/*"],
+      "@pages/*": ["renderer/pages/*"],
+      "@resources/*": ["resources/*"],
+      "@router/*": ["renderer/router/*"],
+      "@shared/*": ["shared/*"],
+      "@stores/*": ["renderer/stores/*"]
     }
   },
   "vueCompilerOptions": {

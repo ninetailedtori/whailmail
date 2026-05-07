@@ -4,17 +4,17 @@
 @import "@catppuccin/tailwindcss/macchiato.css";
 
 /* Design tokens */
-@import "tokens/colours.css";
-@import "tokens/spacing.css";
-@import "tokens/radius.css";
-@import "tokens/sizes.css";
-@import "tokens/typography.css";
+@import "@assets/tokens/colours.css";
+@import "@assets/tokens/spacing.css";
+@import "@assets/tokens/radius.css";
+@import "@assets/tokens/sizes.css";
+@import "@assets/tokens/typography.css";
 
 /* Component styles */
-@import "components/heading.css";
-@import "components/code.css";
-@import "components/button.css";
-@import "components/versions.css";
+@import "@assets/components/heading.css";
+@import "@assets/components/code.css";
+@import "@assets/components/button.css";
+@import "@assets/components/versions.css";
 
 /* Global body */
 body {

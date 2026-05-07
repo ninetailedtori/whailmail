@@ -8,5 +8,11 @@
   "sortImports": true,
   "sortTailwindcss": true,
   "sortPackageJson": true,
-  "ignorePatterns": ["src/renderer/auto-imports.d.ts", "src/renderer/components.d.ts", "src/renderer/typed-router.d.ts", ".eslintrc-auto-import.json","pnpm-lock.yaml"]
+  "ignorePatterns": [
+    "src/renderer/auto-imports.d.ts",
+    "src/renderer/components.d.ts",
+    "src/renderer/typed-router.d.ts",
+    ".eslintrc-auto-import.json",
+    "pnpm-lock.yaml"
+  ]
 }

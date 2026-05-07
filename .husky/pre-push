@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 . "$(dirname "$0")/h"
 
-pnpm run format && pnpm run build && pnpm run test
+cd frontend && pnpm run build && pnpm run test

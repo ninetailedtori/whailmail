@@ -1,32 +1,32 @@
 //! Data-Transfer Object
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct SignupRequest {
+pub struct SSignupReq {
     pub email: String,
     pub password: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct LoginRequest {
+pub struct SLoginReq {
     pub email: String,
     pub password: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct AuthResponse {
+pub struct SAuthResp {
     pub token: String,
-    pub user: UserResponse,
+    pub user: SUserResp,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct UserResponse {
+pub struct SUserResp {
     pub id: String,
     pub email: String,
     pub created_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct AddAccountRequest {
+pub struct SAddAccountReq {
     pub account_type: String,
     pub email: String,
     pub display_name: Option<String>,
@@ -40,7 +40,7 @@ pub struct AddAccountRequest {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct AccountResponse {
+pub struct SAccountResp {
     pub id: String,
     pub email: String,
     pub display_name: Option<String>,
@@ -50,7 +50,7 @@ pub struct AccountResponse {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct EmailResponse {
+pub struct SEmailResp {
     pub id: String,
     pub from: String,
     pub to: Vec<String>,
@@ -60,11 +60,11 @@ pub struct EmailResponse {
     pub is_read: bool,
     pub is_starred: bool,
     pub received_at: DateTime<Utc>,
-    pub attachments: Vec<AttachmentResponse>,
+    pub attachments: Vec<SAttachmentResp>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct AttachmentResponse {
+pub struct SAttachmentResp {
     pub id: String,
     pub filename: String,
     pub mime_type: String,
@@ -72,7 +72,7 @@ pub struct AttachmentResponse {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ErrorResponse {
+pub struct SErrorResp {
     pub error: String,
     pub code: u16,
 }

@@ -1,0 +1,30 @@
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
+  "include": [
+    "renderer/env.d.ts",
+    "renderer/**/*",
+    "renderer/**/*.vue",
+    "preload/*.d.ts"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["renderer/*"],
+      "@assets/*": ["renderer/assets/*"],
+      "@components/*": ["renderer/components/*"],
+      "@layouts/*": ["renderer/layouts/*"],
+      "@pages/*": ["renderer/pages/*"],
+      "@resources/*": ["resources/*"],
+      "@router/*": ["renderer/router/*"],
+      "@shared/*": ["shared/*"],
+      "@stores/*": ["renderer/stores/*"]
+    }
+  },
+  "vueCompilerOptions": {
+    "plugins": [
+      "vue-router/volar/sfc-route-blocks",
+      "vue-router/volar/sfc-typed-router"
+    ]
+  }
+}

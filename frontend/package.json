@@ -1,9 +1,9 @@
 {
   "name": "whailmail",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "An Electron application with Vue and TypeScript",
-  "homepage": "https://electron-vite.org",
-  "author": "example.com",
+  "homepage": "https://github.com/whailmail/whailmail",
+  "author": "https://github.com/whailmail",
   "main": "./out/main/index.js",
   "scripts": {
     "preview": "electron-vite preview",
@@ -23,7 +23,7 @@
     "build:win": "pnpm run build && electron-builder --win",
     "build:mac": "pnpm run build && electron-builder --mac",
     "build:linux": "pnpm run build && electron-builder --linux",
-    "prepare": "husky"
+    "prepare": "cd .. && husky frontend/.husky"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",

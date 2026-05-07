@@ -12,11 +12,16 @@ import VueRouter from "vue-router/vite";
 
 const sharedAliases = {
   "@resources": resolve("./resources"),
-  "@shared": resolve("./frontend/shared"),
+  "@shared": resolve("./shared"),
 };
 
 export default defineConfig({
   main: {
+    build: {
+      lib: {
+        entry: "main/index.ts",
+      },
+    },
     resolve: {
       alias: {
         ...sharedAliases,
@@ -24,6 +29,11 @@ export default defineConfig({
     },
   },
   preload: {
+    build: {
+      lib: {
+        entry: "preload/index.ts",
+      },
+    },
     resolve: {
       alias: {
         ...sharedAliases,
@@ -31,22 +41,28 @@ export default defineConfig({
     },
   },
   renderer: {
+    root: "renderer",
+    build: {
+      rollupOptions: {
+        input: "renderer/index.html",
+      },
+    },
     resolve: {
       alias: {
         ...sharedAliases,
-        "@": resolve("./frontend/renderer"),
-        "@stores": resolve("./frontend/renderer/stores"),
-        "@components": resolve("./frontend/renderer/components"),
-        "@pages": resolve("./frontend/renderer/pages"),
-        "@layouts": resolve("./frontend/renderer/layouts"),
-        "@router": resolve("./frontend/renderer/router"),
-        "@styles": resolve("./frontend/renderer/styles"),
+        "@": resolve("./renderer"),
+        "@assets": resolve("./renderer/assets"),
+        "@components": resolve("./renderer/components"),
+        "@layouts": resolve("./renderer/layouts"),
+        "@pages": resolve("./renderer/pages"),
+        "@router": resolve("./renderer/router"),
+        "@stores": resolve("./renderer/stores"),
       },
     },
     plugins: [
       tailwindcss(),
       VueRouter({
-        dts: resolve("frontend/renderer/typed-router.d.ts"),
+        dts: resolve("renderer/typed-router.d.ts"),
       }),
       vue(),
       vueDevTools(),
@@ -54,7 +70,7 @@ export default defineConfig({
         router: true,
         components: {
           resolvers: [IconsResolver()],
-          dirs: ["./frontend/renderer/components"],
+          dirs: ["./renderer/components"],
         },
         ui: {
           colors: {
@@ -69,10 +85,7 @@ export default defineConfig({
         },
         autoImport: {
           imports: ["vue", "vue-router", "pinia"],
-          dirs: [
-            "./frontend/renderer/composables",
-            "./frontend/renderer/utils",
-          ],
+          dirs: ["./renderer/composables", "./renderer/utils"],
           eslintrc: {
             enabled: true,
           },

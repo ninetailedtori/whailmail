@@ -206,7 +206,7 @@ fn hash_to_uuid(data: &str) -> Uuid
 /// Types that can be created by hashing a source string into their ID.
 /// Implement this if your entity's uniqueness comes from a natural key
 /// (like email) and you want that to be the primary identifier too.
-pub trait WithHashedId
+pub trait TWithHashedId
 {
     fn new_hashed(hash_source: String) -> Self;
 }
@@ -219,7 +219,7 @@ pub trait WithHashedId
 /// boilerplate seventeen times.
 macro_rules! impl_hashed_id {
     ($struct_type:ty,email, $($field:ident : $field_type:ty),*) => {
-        impl WithHashedId for $struct_type
+        impl TWithHashedId for $struct_type
         {
             fn new_hashed(email: String) -> Self
             {
@@ -249,7 +249,7 @@ macro_rules! impl_hashed_id {
     };
 
     ($struct_type:ty,account,email, $($field:ident : $field_type:ty),*) => {
-        impl WithHashedId for $struct_type
+        impl TWithHashedId for $struct_type
         {
             fn new_hashed(email: String) -> Self
             {

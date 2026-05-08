@@ -1,8 +1,9 @@
+use std::error::Error;
+
 // error.rs
 use {
     anyhow::Context,
     serde_json::json,
-    std::fmt,
     thiserror::Error,
     tracing::{error, warn}
 };
@@ -212,21 +213,23 @@ impl EAppError
 }
 
 // Helper trait for converting any error to EAppError with context
-pub trait ErrorContext<T>
+trait TErrorContext<T>
 {
-    fn app_context(self, msg: &str) -> anyhow::Result<T>;
+    fn app_context<S: ToString>(self, msg: S) -> anyhow::Result<T>;
 }
 
-impl<T, E> ErrorContext<T> for Result<T, E>
+impl<T, E> TErrorContext<T> for Result<T, E>
 where E: std::error::Error + Send + Sync + 'static
 {
-    fn app_context(self, msg: &str) -> anyhow::Result<T> { self.context(msg) }
+    fn app_context<S: ToString>(self, msg: S) -> anyhow::Result<T>
+    {
+        self.context(msg.to_string())
+    }
 }
 
-// From implementations for external crates
-impl From<tokio::io::Error> for EAppError
+impl From<std::io::Error> for EAppError
 {
-    fn from(err: tokio::io::Error) -> Self
+    fn from(err: std::io::Error) -> Self
     {
         match err.kind()
         {
@@ -235,16 +238,18 @@ impl From<tokio::io::Error> for EAppError
             {
                 EAppError::ConnectionRefused
             },
-            | _ => EAppError::InternalError(anyhow::Error::from(err))
+            | _ => EAppError::FileSystemError(anyhow::Error::from(err))
         }
     }
 }
 
+// Catch-all for anything that converts to anyhow::Error
 impl From<anyhow::Error> for EAppError
 {
     fn from(err: anyhow::Error) -> Self { EAppError::InternalError(err) }
 }
 
+// Specific structured errors
 impl From<serde_json::error::Error> for EAppError
 {
     fn from(err: serde_json::error::Error) -> Self
@@ -253,19 +258,9 @@ impl From<serde_json::error::Error> for EAppError
     }
 }
 
-// Standard library implementations
-impl From<std::io::Error> for EAppError
-{
-    fn from(err: std::io::Error) -> Self
-    {
-        EAppError::FileSystemError(anyhow::Error::from(err))
-    }
-}
-
 pub type RAppResult<T> = Result<T, EAppError>;
 
-// Bonus: Convert Result<T, EAppError> → Result<T, anyhow::Error>
-impl From<EAppError> for anyhow::Error
+impl EAppError
 {
-    fn from(err: EAppError) -> Self { anyhow::anyhow!("{}", err) }
+    pub fn into_anyhow(self) -> anyhow::Error { anyhow::anyhow!("{}", self) }
 }

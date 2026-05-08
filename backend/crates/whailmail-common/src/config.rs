@@ -29,9 +29,7 @@ pub struct SConfig
     pub db:          SDbConfig,
     pub jwt:         SJwtConfig,
     pub server:      SServerConfig,
-    #[cfg(feature = "mailserver")]
-    pub imap_sync:   SImapSyncConfig,
-    #[cfg(feature = "mailserver")]
+    pub imap_sync:   SImapConfig,
     pub smtp:        SSmtpConfig,
     pub mail_limits: SMailLimitsConfig,
     #[cfg(feature = "mailserver")]
@@ -64,9 +62,8 @@ pub struct SServerConfig
     pub cors_allowed_origins: Vec<String>
 }
 
-#[cfg(feature = "mailserver")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SImapSyncConfig
+pub struct SImapConfig
 {
     pub poll_interval_secs:      u64,
     pub max_concurrent_syncs:    u32,
@@ -74,7 +71,6 @@ pub struct SImapSyncConfig
     pub idle_timeout_secs:       u64
 }
 
-#[cfg(feature = "mailserver")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SSmtpConfig
 {
@@ -285,8 +281,7 @@ impl SServerConfig
     }
 }
 
-#[cfg(feature = "mailserver")]
-impl SImapSyncConfig
+impl SImapConfig
 {
     fn validate(&self) -> Result<(), Box<dyn std::error::Error>>
     {
@@ -322,7 +317,6 @@ impl SImapSyncConfig
     }
 }
 
-#[cfg(feature = "mailserver")]
 impl SSmtpConfig
 {
     fn validate(&self) -> Result<(), Box<dyn std::error::Error>>

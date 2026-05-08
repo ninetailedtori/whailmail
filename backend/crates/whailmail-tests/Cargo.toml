@@ -6,13 +6,13 @@
 
 [dependencies]
   # All internal crates
-  whailmail-common  = { path = "../whailmail-common" }
-  whailmail-api     = { path = "../whailmail-api" }
-  whailmail-db      = { path = "../whailmail-db" }
-  whailmail-filters = { path = "../whailmail-filters" }
-  whailmail-imap    = { path = "../whailmail-imap" }
-  whailmail-smtp    = { path = "../whailmail-smtp" }
-  whailmail-indexer = { path = "../whailmail-indexer" }
+  whailmail-common      = { path = "../whailmail-common" }
+  whailmail-api         = { path = "../whailmail-api" }
+  whailmail-db          = { path = "../whailmail-db" }
+  whailmail-filters     = { path = "../whailmail-filters" }
+  whailmail-server-imap = { path = "../whailmail-server-imap" }
+  whailmail-server-smtp = { path = "../whailmail-server-smtp" }
+  whailmail-indexer     = { path = "../whailmail-indexer" }
 
   # Runtime & logging
   tokio              = { workspace = true }

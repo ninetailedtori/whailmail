@@ -1169,15 +1169,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "whailmail-imap"
-version = "0.1.0"
-
-[[package]]
 name = "whailmail-indexer"
 version = "0.1.0"
 
 [[package]]
-name = "whailmail-smtp"
+name = "whailmail-server-imap"
+version = "0.1.0"
+
+[[package]]
+name = "whailmail-server-smtp"
 version = "0.1.0"
 
 [[package]]
@@ -1199,9 +1199,9 @@ dependencies = [
  "whailmail-common",
  "whailmail-db",
  "whailmail-filters",
- "whailmail-imap",
  "whailmail-indexer",
- "whailmail-smtp",
+ "whailmail-server-imap",
+ "whailmail-server-smtp",
 ]
 
 [[package]]

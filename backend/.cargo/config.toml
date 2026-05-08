@@ -14,11 +14,10 @@
   open = true
 
 [env]
-  CC     = "clang"
-  CXX    = "clang++"
-  CC_LD  = "lld"
-  CXX_LD = "lld"
-
+  CC       = "clang"
+  CXX      = "clang++"
+  CC_LD    = "lld"
+  CXX_LD   = "lld"
   CFLAGS   = "-march=native -mtune=native -O3 -fPIC -fstack-protector-strong -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -Wp,-D_FORTIFY_SOURCE=3"
   CXXFLAGS = "-march=native -mtune=native -O3 -fPIC -fstack-protector-strong -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -Wp,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS"
   LDFLAGS  = "-fuse-ld=lld -Wl,-O4,--sort-common,--as-needed,-z,relro,-z,now,-z,pack-relative-relocs"

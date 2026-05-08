@@ -1,17 +1,17 @@
 [db]
-  url                     = "sqlite:~/.local/share/whailmail/whailmail.db"
-  max_connections         = 10
-  min_idle                = 2
+  url                     = "sqlite://whailmail.db"
+  max_connections         = 5
+  min_idle                = 1
   connection_timeout_secs = 10
 
 [jwt]
-  secret                  = "your-secret-here-at-least-32-chars-long"
-  expiration_secs         = 3600
-  refresh_expiration_secs = 604800
+  secret                  = "your-secret-key-at-least-32-chars-long"
+  expiration_secs         = 3_600
+  refresh_expiration_secs = 25_200
 
 [server]
-  host                 = "0.0.0.0"
-  port                 = 8080
+  host                 = "127.0.0.1"
+  port                 = 8_080
   log_level            = "info"
   cors_allowed_origins = [ "http://localhost:3000", "http://localhost:5173" ]
 
@@ -27,8 +27,8 @@
   max_retries             = 3
 
 [mail_limits]
-  max_attachment_size_bytes = 25000000
-  max_email_body_size_bytes = 100000000
+  max_attachment_size_bytes = 25_000_000
+  max_email_body_size_bytes = 100_000_000
   max_recipients_per_email  = 100
 
 [features]

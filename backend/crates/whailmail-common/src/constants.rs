@@ -150,19 +150,37 @@ pub mod paths
         Log
     }
 
+    const APP_NAME: &str = crate::constants::app::NAME;
+
+    macro_rules! xdg_dir {
+        ($env:expr, $fallback:expr) => {{
+            std::env::var($env)
+                .ok()
+                .map(PathBuf::from)
+                .or_else(|| dirs::home_dir().map(|h| h.join($fallback)))
+                .unwrap_or_default()
+        }};
+    }
+
+    macro_rules! windows_dir {
+        ($env_primary:expr, $env_fallback:expr) => {{
+            std::env::var($env_primary)
+                .or_else(|_| std::env::var($env_fallback))
+                .ok()
+                .map(PathBuf::from)
+                .unwrap_or_else(|| PathBuf::from("."))
+        }};
+    }
+
     fn get_base_dir(dir_type: EDirType) -> PathBuf
     {
         #[cfg(target_os = "windows")]
         {
-            let (env_var, fallback) = match dir_type
+            match dir_type
             {
-                | EDirType::Config => ("APPDATA", "APPDATA"),
-                | _ => ("LOCALAPPDATA", "APPDATA")
-            };
-            let base = std::env::var(env_var)
-                .or_else(|_| std::env::var(fallback))
-                .unwrap_or_else(|_| ".".to_string());
-            PathBuf::from(base)
+                | EDirType::Config => windows_dir!("APPDATA", "APPDATA"),
+                | _ => windows_dir!("LOCALAPPDATA", "APPDATA")
+            }
         }
 
         #[cfg(target_os = "macos")]
@@ -208,38 +226,22 @@ pub mod paths
             target_os = "netbsd"
         ))]
         {
-            let (env_var, fallback) = match dir_type
+            match dir_type
             {
-                | EDirType::Data => ("XDG_DATA_HOME", ".local/share"),
-                | EDirType::Config => ("XDG_CONFIG_HOME", ".config"),
-                | EDirType::Cache => ("XDG_CACHE_HOME", ".cache"),
-                | EDirType::Log => ("XDG_STATE_HOME", ".local/state")
-            };
-
-            let base = std::env::var(env_var).unwrap_or_else(|_| {
-                dirs::home_dir()
-                    .unwrap_or_default()
-                    .join(fallback)
-                    .to_string_lossy()
-                    .to_string()
-            });
-            PathBuf::from(base)
+                | EDirType::Data => xdg_dir!("XDG_DATA_HOME", ".local/share"),
+                | EDirType::Config => xdg_dir!("XDG_CONFIG_HOME", ".config"),
+                | EDirType::Cache => xdg_dir!("XDG_CACHE_HOME", ".cache"),
+                | EDirType::Log => xdg_dir!("XDG_STATE_HOME", ".local/state")
+            }
         }
     }
 
-    pub fn data_dir() -> PathBuf
-    {
-        get_base_dir(EDirType::Data).join(crate::constants::app::NAME)
-    }
-
-    pub fn config_dir() -> PathBuf
-    {
-        get_base_dir(EDirType::Config).join(crate::constants::app::NAME)
-    }
+    // Single-path accessors for data/cache/log
+    pub fn data_dir() -> PathBuf { get_base_dir(EDirType::Data).join(APP_NAME) }
 
     pub fn cache_dir() -> PathBuf
     {
-        get_base_dir(EDirType::Cache).join(crate::constants::app::NAME)
+        get_base_dir(EDirType::Cache).join(APP_NAME)
     }
 
     pub fn log_dir() -> PathBuf
@@ -253,7 +255,7 @@ pub mod paths
             target_os = "netbsd"
         ))]
         {
-            base.join(crate::constants::app::NAME).join("log")
+            base.join(APP_NAME).join("log")
         }
         #[cfg(not(any(
             target_os = "linux",
@@ -263,8 +265,48 @@ pub mod paths
             target_os = "netbsd"
         )))]
         {
-            base.join(crate::constants::app::NAME)
+            base.join(APP_NAME)
         }
+    }
+
+    pub fn config_search_paths() -> Vec<PathBuf>
+    {
+        #[cfg(any(
+            target_os = "linux",
+            target_os = "freebsd",
+            target_os = "dragonfly",
+            target_os = "openbsd",
+            target_os = "netbsd"
+        ))]
+        {
+            vec![
+                xdg_dir!("XDG_CONFIG_HOME", ".config").join(APP_NAME),
+                PathBuf::from(format!("/etc/{}", APP_NAME)),
+                PathBuf::from(format!("/usr/local/share/{}", APP_NAME)),
+                PathBuf::from(format!("/usr/share/{}", APP_NAME)),
+            ]
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            vec![
+                dirs::config_dir().unwrap_or_default().join(APP_NAME),
+                PathBuf::from(format!("/etc/{}", APP_NAME)),
+            ]
+        }
+
+        #[cfg(target_os = "windows")]
+        {
+            vec![
+                windows_dir!("APPDATA", "APPDATA").join(APP_NAME),
+                PathBuf::from(format!("C:\\ProgramData\\{}", APP_NAME)),
+            ]
+        }
+    }
+
+    pub fn config_dir() -> PathBuf
+    {
+        get_base_dir(EDirType::Config).join(APP_NAME)
     }
 
     pub fn certs_dir() -> PathBuf { config_dir().join("certs") }
@@ -275,5 +317,16 @@ pub mod paths
 
     pub fn db_path() -> PathBuf { data_dir().join("whailmail.db") }
 
-    pub fn config_file() -> PathBuf { config_dir().join("config.toml") }
+    pub fn config_file() -> PathBuf
+    {
+        config_search_paths()
+            .into_iter()
+            .find(|p| p.join("config.toml").exists())
+            .map(|p| p.join("config.toml"))
+            .unwrap_or_else(|| {
+                get_base_dir(EDirType::Config)
+                    .join(APP_NAME)
+                    .join("config.toml")
+            })
+    }
 }

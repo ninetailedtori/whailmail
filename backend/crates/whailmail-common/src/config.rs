@@ -20,7 +20,7 @@
 
 use {
     serde::{Deserialize, Serialize},
-    std::env
+    std::{env, path::PathBuf}
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -96,75 +96,31 @@ pub struct SFeaturesConfig
 
 // Helpers
 
-fn get_env<T>(
-    name: &str,
-    default: &str
-) -> Result<T, Box<dyn std::error::Error>>
+fn config_file() -> PathBuf
+{
+    // Panics if not found; idiomatic for startup-time config.
+    std::fs::canonicalize("whailmail.toml").expect("config file not found")
+}
+
+fn get_env<T>(name: &str, default: T) -> Result<T, Box<dyn std::error::Error>>
 where
-    T: std::str::FromStr,
+    T: std::str::FromStr + Clone,
     T::Err: std::error::Error + 'static
 {
     env::var(name)
-        .unwrap_or_else(|_| default.to_string())
-        .parse::<T>()
+        .ok()
+        .map(|s| s.parse::<T>())
+        .transpose()
         .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)
+        .map(|opt| opt.unwrap_or(default))
 }
 
-fn validate_range<T: PartialOrd + std::fmt::Display>(
-    name: &str,
-    value: T,
-    min: T,
-    max: T
-) -> Result<(), Box<dyn std::error::Error>>
+fn load_toml() -> Result<SConfig, Box<dyn std::error::Error>>
 {
-    if value < min || value > max
-    {
-        return Err(
-            format!("{} must be between {} and {}", name, min, max).into()
-        );
-    }
-    Ok(())
-}
-
-fn validate_nonzero<T: PartialEq + Default + std::fmt::Display>(
-    name: &str,
-    value: T
-) -> Result<(), Box<dyn std::error::Error>>
-{
-    if value == T::default()
-    {
-        return Err(format!("{} must be > 0", name).into());
-    }
-    Ok(())
-}
-
-fn validate_gte<T: PartialOrd + std::fmt::Display>(
-    name_a: &str,
-    value_a: T,
-    name_b: &str,
-    value_b: T
-) -> Result<(), Box<dyn std::error::Error>>
-{
-    if value_a < value_b
-    {
-        return Err(format!("{} must be >= {}", name_a, name_b).into());
-    }
-    Ok(())
-}
-
-fn validate_url_scheme(
-    url: &str,
-    schemes: &[&str]
-) -> Result<(), Box<dyn std::error::Error>>
-{
-    if schemes.iter().any(|s| url.starts_with(s))
-    {
-        Ok(())
-    }
-    else
-    {
-        Err(format!("URL must start with one of: {:?}", schemes).into())
-    }
+    let path = config_file();
+    let contents = std::fs::read_to_string(path)?;
+    toml::from_str::<SConfig>(&contents)
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)
 }
 
 // Config & Validation
@@ -175,15 +131,20 @@ impl SConfig
     {
         dotenv::dotenv().ok();
 
-        let config = SConfig {
-            db:          SDbConfig::from_env()?,
-            jwt:         SJwtConfig::from_env()?,
-            server:      SServerConfig::from_env()?,
-            imap_sync:   SImapSyncConfig::from_env()?,
-            smtp:        SSmtpConfig::from_env()?,
-            mail_limits: SMailLimitsConfig::from_env()?,
-            features:    SFeaturesConfig::from_env()?
-        };
+        let mut config = load_toml()?;
+
+        // Env overrides
+        config.jwt.secret = env::var("JWT_SECRET").unwrap_or(config.jwt.secret);
+        config.server.host = get_env("SERVER_HOST", config.server.host)?;
+        config.server.port = get_env("SERVER_PORT", config.server.port)?;
+        config.server.log_level =
+            get_env("LOG_LEVEL", config.server.log_level)?;
+
+        if let Ok(origins) = env::var("CORS_ALLOWED_ORIGINS")
+        {
+            config.server.cors_allowed_origins =
+                origins.split(',').map(|s| s.trim().to_string()).collect();
+        }
 
         config.validate()?;
         Ok(config)
@@ -203,73 +164,50 @@ impl SConfig
 
 impl SDbConfig
 {
-    fn from_env() -> Result<Self, Box<dyn std::error::Error>>
-    {
-        let url = env::var("DB_URL").map_err(|_| {
-            "DB_URL must be set (e.g., sqlite://whailmail.db or postgres://...)"
-        })?;
-
-        Ok(SDbConfig {
-            url,
-            max_connections: get_env("DB_MAX_CONNECTIONS", "5")?,
-            min_idle: get_env("DB_MIN_IDLE", "1")?,
-            connection_timeout_secs: get_env(
-                "DB_CONNECTION_TIMEOUT_SECS",
-                "10"
-            )?
-        })
-    }
-
     fn validate(&self) -> Result<(), Box<dyn std::error::Error>>
     {
-        validate_url_scheme(&self.url, &["sqlite://", "postgres://"])?;
-        validate_range("DB_MAX_CONNECTIONS", self.max_connections, 1, 100)?;
-        validate_range("DB_MIN_IDLE", self.min_idle, 0, self.max_connections)?;
-        validate_range(
-            "DB_CONNECTION_TIMEOUT_SECS",
-            self.connection_timeout_secs,
-            1,
-            300
-        )?;
+        if !self.url.starts_with("sqlite://")
+            && !self.url.starts_with("postgres://")
+        {
+            return Err(
+                "DB_URL must start with sqlite:// or postgres://".into()
+            );
+        }
+        if self.max_connections == 0 || self.max_connections > 100
+        {
+            return Err("DB_MAX_CONNECTIONS must be in [1, 100]".into());
+        }
+        if self.min_idle > self.max_connections
+        {
+            return Err("DB_MIN_IDLE must be <= DB_MAX_CONNECTIONS".into());
+        }
+        if self.connection_timeout_secs == 0
+            || self.connection_timeout_secs > 300
+        {
+            return Err("DB_CONNECTION_TIMEOUT_SECS must be in [1, 300]".into());
+        }
         Ok(())
     }
 }
 
 impl SJwtConfig
 {
-    fn from_env() -> Result<Self, Box<dyn std::error::Error>>
+    fn validate(&self) -> Result<(), Box<dyn std::error::Error>>
     {
-        let secret =
-            env::var("JWT_SECRET").map_err(|_| "JWT_SECRET must be set")?;
-
-        if secret.len() < 32
+        if self.secret.len() < 32
         {
             return Err("JWT_SECRET must be at least 32 characters".into());
         }
-
-        let expiration_secs: u64 = get_env("JWT_EXPIRATION_SECS", "3600")?;
-        let refresh_expiration_secs: u64 = get_env(
-            "JWT_REFRESH_EXPIRATION_SECS",
-            &(expiration_secs * 7).to_string()
-        )?;
-
-        Ok(SJwtConfig {
-            secret,
-            expiration_secs,
-            refresh_expiration_secs
-        })
-    }
-
-    fn validate(&self) -> Result<(), Box<dyn std::error::Error>>
-    {
-        validate_nonzero("JWT_EXPIRATION_SECS", self.expiration_secs)?;
-        validate_gte(
-            "JWT_REFRESH_EXPIRATION_SECS",
-            self.refresh_expiration_secs,
-            "JWT_EXPIRATION_SECS",
-            self.expiration_secs
-        )?;
-
+        if self.expiration_secs == 0
+        {
+            return Err("JWT_EXPIRATION_SECS must be > 0".into());
+        }
+        if self.refresh_expiration_secs < self.expiration_secs
+        {
+            return Err("JWT_REFRESH_EXPIRATION_SECS must be >= \
+                        JWT_EXPIRATION_SECS"
+                .into());
+        }
         if self.expiration_secs < 300
         {
             eprintln!(
@@ -278,46 +216,18 @@ impl SJwtConfig
                 self.expiration_secs
             );
         }
-
         Ok(())
     }
 }
 
 impl SServerConfig
 {
-    fn from_env() -> Result<Self, Box<dyn std::error::Error>>
-    {
-        let host = get_env::<String>("SERVER_HOST", "127.0.0.1")?;
-        let port = get_env("SERVER_PORT", "8080")?;
-        let log_level = get_env::<String>("LOG_LEVEL", "info")?;
-        let cors_allowed_origins = Self::parse_cors_origins()?;
-
-        Ok(SServerConfig {
-            host,
-            port,
-            log_level,
-            cors_allowed_origins
-        })
-    }
-
-    fn parse_cors_origins() -> Result<Vec<String>, Box<dyn std::error::Error>>
-    {
-        let cors_str = env::var("CORS_ALLOWED_ORIGINS").unwrap_or_else(|_| {
-            "http://localhost:3000,http://localhost:5173".to_string()
-        });
-
-        Ok(cors_str.split(',').map(|s| s.trim().to_string()).collect())
-    }
-
     fn validate(&self) -> Result<(), Box<dyn std::error::Error>>
     {
-        validate_range("SERVER_PORT", self.port, 1, 65535)?;
-
         if self.host.is_empty()
         {
             return Err("SERVER_HOST cannot be empty".into());
         }
-
         let valid_log_levels = ["trace", "debug", "info", "warn", "error"];
         if !valid_log_levels.contains(&self.log_level.as_str())
         {
@@ -327,12 +237,10 @@ impl SServerConfig
             )
             .into());
         }
-
         if self.cors_allowed_origins.is_empty()
         {
             return Err("CORS_ALLOWED_ORIGINS cannot be empty".into());
         }
-
         for origin in &self.cors_allowed_origins
         {
             if !origin.starts_with("http://") && !origin.starts_with("https://")
@@ -344,53 +252,35 @@ impl SServerConfig
                 .into());
             }
         }
-
         Ok(())
     }
 }
 
 impl SImapSyncConfig
 {
-    fn from_env() -> Result<Self, Box<dyn std::error::Error>>
-    {
-        Ok(SImapSyncConfig {
-            poll_interval_secs:      get_env("IMAP_POLL_INTERVAL_SECS", "300")?,
-            max_concurrent_syncs:    get_env("IMAP_MAX_CONCURRENT_SYNCS", "5")?,
-            connection_timeout_secs: get_env(
-                "IMAP_CONNECTION_TIMEOUT_SECS",
-                "30"
-            )?,
-            idle_timeout_secs:       get_env("IMAP_IDLE_TIMEOUT_SECS", "600")?
-        })
-    }
-
     fn validate(&self) -> Result<(), Box<dyn std::error::Error>>
     {
-        validate_range(
-            "IMAP_POLL_INTERVAL_SECS",
-            self.poll_interval_secs,
-            1,
-            u64::MAX
-        )?;
-        validate_range(
-            "IMAP_MAX_CONCURRENT_SYNCS",
-            self.max_concurrent_syncs,
-            1,
-            50
-        )?;
-        validate_range(
-            "IMAP_CONNECTION_TIMEOUT_SECS",
-            self.connection_timeout_secs,
-            1,
-            300
-        )?;
-        validate_gte(
-            "IMAP_IDLE_TIMEOUT_SECS",
-            self.idle_timeout_secs,
-            "IMAP_CONNECTION_TIMEOUT_SECS",
-            self.connection_timeout_secs
-        )?;
-
+        if self.poll_interval_secs == 0
+        {
+            return Err("IMAP_POLL_INTERVAL_SECS must be > 0".into());
+        }
+        if self.max_concurrent_syncs == 0 || self.max_concurrent_syncs > 50
+        {
+            return Err("IMAP_MAX_CONCURRENT_SYNCS must be in [1, 50]".into());
+        }
+        if self.connection_timeout_secs == 0
+            || self.connection_timeout_secs > 300
+        {
+            return Err(
+                "IMAP_CONNECTION_TIMEOUT_SECS must be in [1, 300]".into()
+            );
+        }
+        if self.idle_timeout_secs < self.connection_timeout_secs
+        {
+            return Err("IMAP_IDLE_TIMEOUT_SECS must be >= \
+                        IMAP_CONNECTION_TIMEOUT_SECS"
+                .into());
+        }
         if self.poll_interval_secs < 60
         {
             eprintln!(
@@ -398,113 +288,67 @@ impl SImapSyncConfig
                  server load"
             );
         }
-
         Ok(())
     }
 }
 
 impl SSmtpConfig
 {
-    fn from_env() -> Result<Self, Box<dyn std::error::Error>>
-    {
-        Ok(SSmtpConfig {
-            connection_timeout_secs: get_env(
-                "SMTP_CONNECTION_TIMEOUT_SECS",
-                "10"
-            )?,
-            send_timeout_secs:       get_env("SMTP_SEND_TIMEOUT_SECS", "30")?,
-            max_retries:             get_env("SMTP_MAX_RETRIES", "3")?
-        })
-    }
-
     fn validate(&self) -> Result<(), Box<dyn std::error::Error>>
     {
-        validate_range(
-            "SMTP_CONNECTION_TIMEOUT_SECS",
-            self.connection_timeout_secs,
-            1,
-            300
-        )?;
-        validate_range(
-            "SMTP_SEND_TIMEOUT_SECS",
-            self.send_timeout_secs,
-            1,
-            600
-        )?;
-        validate_range("SMTP_MAX_RETRIES", self.max_retries, 0, 10)?;
-
+        if self.connection_timeout_secs == 0
+            || self.connection_timeout_secs > 300
+        {
+            return Err(
+                "SMTP_CONNECTION_TIMEOUT_SECS must be in [1, 300]".into()
+            );
+        }
+        if self.send_timeout_secs == 0 || self.send_timeout_secs > 600
+        {
+            return Err("SMTP_SEND_TIMEOUT_SECS must be in [1, 600]".into());
+        }
+        if self.max_retries > 10
+        {
+            return Err("SMTP_MAX_RETRIES must be in [0, 10]".into());
+        }
         Ok(())
     }
 }
 
 impl SMailLimitsConfig
 {
-    const MAX_ATTACHMENT_SIZE: u64 = 500_000_000;
-    const MAX_BODY_SIZE: u64 = 1_000_000_000;
-    const MAX_RECIPIENTS: u32 = 1000;
-    const MIN_ATTACHMENT_SIZE: u64 = 1_000_000;
-    const MIN_BODY_SIZE: u64 = 1_000_000;
-
-    fn from_env() -> Result<Self, Box<dyn std::error::Error>>
-    {
-        Ok(SMailLimitsConfig {
-            max_attachment_size_bytes: get_env(
-                "MAX_ATTACHMENT_SIZE_BYTES",
-                "25000000"
-            )?,
-            max_email_body_size_bytes: get_env(
-                "MAX_EMAIL_BODY_SIZE_BYTES",
-                "100000000"
-            )?,
-            max_recipients_per_email:  get_env(
-                "MAX_RECIPIENTS_PER_EMAIL",
-                "100"
-            )?
-        })
-    }
-
     fn validate(&self) -> Result<(), Box<dyn std::error::Error>>
     {
-        validate_range(
-            "MAX_ATTACHMENT_SIZE_BYTES",
-            self.max_attachment_size_bytes,
-            Self::MIN_ATTACHMENT_SIZE,
-            Self::MAX_ATTACHMENT_SIZE
-        )?;
-
-        validate_range(
-            "MAX_EMAIL_BODY_SIZE_BYTES",
-            self.max_email_body_size_bytes,
-            Self::MIN_BODY_SIZE,
-            Self::MAX_BODY_SIZE
-        )?;
-
-        validate_range(
-            "MAX_RECIPIENTS_PER_EMAIL",
-            self.max_recipients_per_email,
-            1,
-            Self::MAX_RECIPIENTS
-        )?;
-
-        validate_gte(
-            "MAX_EMAIL_BODY_SIZE_BYTES",
-            self.max_email_body_size_bytes,
-            "MAX_ATTACHMENT_SIZE_BYTES",
-            self.max_attachment_size_bytes
-        )?;
-
+        if self.max_attachment_size_bytes == 0
+            || self.max_attachment_size_bytes > 500_000_000
+        {
+            return Err("MAX_ATTACHMENT_SIZE_BYTES must be in [1, \
+                        500_000_000]"
+                .into());
+        }
+        if self.max_email_body_size_bytes == 0
+            || self.max_email_body_size_bytes > 1_000_000_000
+        {
+            return Err("MAX_EMAIL_BODY_SIZE_BYTES must be in [1, \
+                        1_000_000_000]"
+                .into());
+        }
+        if self.max_recipients_per_email == 0
+            || self.max_recipients_per_email > 1000
+        {
+            return Err("MAX_RECIPIENTS_PER_EMAIL must be in [1, 1000]".into());
+        }
+        if self.max_email_body_size_bytes < self.max_attachment_size_bytes
+        {
+            return Err("MAX_EMAIL_BODY_SIZE_BYTES must be >= \
+                        MAX_ATTACHMENT_SIZE_BYTES"
+                .into());
+        }
         Ok(())
     }
 }
 
 impl SFeaturesConfig
 {
-    fn from_env() -> Result<Self, Box<dyn std::error::Error>>
-    {
-        Ok(SFeaturesConfig {
-            self_hosted_mode:   get_env("SELF_HOSTED_MODE", "false")?,
-            encryption_enabled: get_env("ENCRYPTION_ENABLED", "false")?,
-            enable_s3_storage:  get_env("ENABLE_S3_STORAGE", "false")?
-        })
-    }
+    // No validation needed; bools are always valid.
 }

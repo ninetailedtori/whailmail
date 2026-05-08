@@ -59,6 +59,7 @@
     # Auth & crypto
     jsonwebtoken = "10.3"
     uuid         = { version = "1.23", features = [ "v4", "serde" ] }
+    sha1         = "0.11"
     sha2         = "0.11"
     bcrypt       = "0.19"
 

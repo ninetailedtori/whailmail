@@ -82,6 +82,7 @@
     config = "0.15"
 
     # Errors
+    anyhow    = "1.0"
     thiserror = "2.0"
 
     # Logging

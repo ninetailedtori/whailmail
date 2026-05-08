@@ -44,7 +44,7 @@ impl fmt::Display for EPatternError
 impl std::error::Error for EPatternError {}
 
 /// Flags controlling pattern matching behaviour
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct EPatternFlags
 {
     /// Whether to match the full string.
@@ -55,19 +55,6 @@ pub struct EPatternFlags
     pub case_insensitive:     bool,
     pub multi_line:           bool,
     pub dot_matches_new_line: bool
-}
-
-impl Default for EPatternFlags
-{
-    fn default() -> Self
-    {
-        EPatternFlags {
-            full_match:           false,
-            case_insensitive:     false,
-            multi_line:           false,
-            dot_matches_new_line: false
-        }
-    }
 }
 
 /// Pattern source (pre-compilation)

@@ -35,7 +35,6 @@ pub use {
 
 /// Initialize tracing/logging infrastructure
 /// Call this once at app startup
-
 pub fn init_tracing()
 {
     let env_filter = EnvFilter::try_from_default_env()

@@ -13,7 +13,6 @@ warn-on-all-wildcard-imports                 = true
 warn-unsafe-macro-metavars-in-private-macros = true
 
 ## Keep Our Docs Pretty & Consistent :3
-module-items-ordered-within-groups = "all"
 doc-valid-idents = [
   "SMTP",
   "IMAP",
@@ -36,10 +35,9 @@ allow-expect-in-tests = true
 allow-unwrap-in-tests = true
 
 ## Know Your Limits (Reasonable Thresholds)
-too-many-arguments-threshold         = 8
-single-char-lifetime-names-threshold = 5
-too-many-lines-threshold             = 250
-cognitive-complexity-threshold       = 30
-type-complexity-threshold            = 250
-enum-variant-name-threshold          = 3
-enum-variant-size-threshold          = 200
+too-many-arguments-threshold   = 8
+too-many-lines-threshold       = 250
+cognitive-complexity-threshold = 30
+type-complexity-threshold      = 250
+enum-variant-name-threshold    = 3
+enum-variant-size-threshold    = 200

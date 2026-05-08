@@ -30,6 +30,16 @@
     # - indexing: Local full-text search (next step owo)
 
   [workspace.dependencies]
+    # Internal crates
+    whailmail-api.path         = "crates/whailmail-api"
+    whailmail-common.path      = "crates/whailmail-common"
+    whailmail-db.path          = "crates/whailmail-db"
+    whailmail-filters.path     = "crates/whailmail-filters"
+    whailmail-indexer.path     = "crates/whailmail-indexer"
+    whailmail-server-imap.path = "crates/whailmail-server-imap"
+    whailmail-server-smtp.path = "crates/whailmail-server-smtp"
+    whailmail-tests.path       = "crates/whailmail-tests"
+
     # Async runtime
     tokio      = { version = "1.52", features = [ "full" ] }
     tokio-util = "0.7"

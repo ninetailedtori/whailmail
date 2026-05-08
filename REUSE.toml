@@ -40,6 +40,6 @@ version = 1
   SPDX-License-Identifier = "GPL-3.0-or-later"
 
 [[annotations]]
-  path = ["frontend/public/fonts/JetBrainsMono/**"]
-  SPDX-FileCopyrightText = "2014 Ryan L McIntyre (https://ryanlmcintyre.com)"
+  path                    = [ "frontend/public/fonts/JetBrainsMono/**" ]
+  SPDX-FileCopyrightText  = "2014 Ryan L McIntyre (https://ryanlmcintyre.com)"
   SPDX-License-Identifier = "OFL-1.1"

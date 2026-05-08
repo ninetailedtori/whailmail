@@ -141,6 +141,7 @@ pub mod paths
 {
     use std::path::PathBuf;
 
+    #[derive(Debug, Clone, Copy)]
     enum EDirType
     {
         Data,
@@ -153,15 +154,10 @@ pub mod paths
     {
         #[cfg(target_os = "windows")]
         {
-            let env_var = match dir_type
+            let (env_var, fallback) = match dir_type
             {
-                | EDirType::Cache | EDirType::Log => "LOCALAPPDATA",
-                | _ => "APPDATA"
-            };
-            let fallback = match dir_type
-            {
-                | EDirType::Cache | EDirType::Log => "APPDATA",
-                | _ => "LOCALAPPDATA"
+                | EDirType::Config => ("APPDATA", "APPDATA"),
+                | _ => ("LOCALAPPDATA", "APPDATA")
             };
             let base = std::env::var(env_var)
                 .or_else(|_| std::env::var(fallback))
@@ -178,7 +174,7 @@ pub mod paths
                     dirs::data_local_dir().unwrap_or_else(|| {
                         dirs::home_dir()
                             .unwrap_or_default()
-                            .join(".local/share")
+                            .join("Library/Application Support")
                     })
                 },
                 | EDirType::Config =>
@@ -200,79 +196,6 @@ pub mod paths
                 | EDirType::Log =>
                 {
                     dirs::home_dir().unwrap_or_default().join("Library/Logs")
-                },
-            }
-        }
-
-        #[cfg(target_os = "ios")]
-        {
-            let app_id = crate::constants::app::NAME;
-            match dir_type
-            {
-                | EDirType::Data =>
-                {
-                    PathBuf::from(format!(
-                        "/var/mobile/Containers/Data/Application/{}/Documents",
-                        app_id
-                    ))
-                },
-                | EDirType::Config =>
-                {
-                    PathBuf::from(format!(
-                        "/var/mobile/Containers/Data/Application/{}/Library",
-                        app_id
-                    ))
-                },
-                | EDirType::Cache =>
-                {
-                    PathBuf::from(format!(
-                        "/var/mobile/Containers/Data/Application/{}/Library/\
-                         Caches",
-                        app_id
-                    ))
-                },
-                | EDirType::Log =>
-                {
-                    PathBuf::from(format!(
-                        "/var/mobile/Containers/Data/Application/{}/Documents/\
-                         Logs",
-                        app_id
-                    ))
-                },
-            }
-        }
-
-        #[cfg(target_os = "android")]
-        {
-            match dir_type
-            {
-                | EDirType::Data =>
-                {
-                    PathBuf::from(format!(
-                        "/data/data/{}/files",
-                        crate::constants::app::NAME
-                    ))
-                },
-                | EDirType::Config =>
-                {
-                    PathBuf::from(format!(
-                        "/data/data/{}/shared_prefs",
-                        crate::constants::app::NAME
-                    ))
-                },
-                | EDirType::Cache =>
-                {
-                    PathBuf::from(format!(
-                        "/data/data/{}/cache",
-                        crate::constants::app::NAME
-                    ))
-                },
-                | EDirType::Log =>
-                {
-                    PathBuf::from(format!(
-                        "/data/data/{}/logs",
-                        crate::constants::app::NAME
-                    ))
                 },
             }
         }

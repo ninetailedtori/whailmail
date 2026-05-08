@@ -16,14 +16,17 @@
   resolver = "2"
 
   [workspace.package]
-    version = "0.1.0"
-    edition = "2024"
-    license = "GPL-3.0-or-later"
+    version      = "0.1.0"
+    edition      = "2024"
+    license      = "GPL-3.0-or-later"
     license-file = "../COPYING"
-    authors = [
-      "ninetailedtori <ninetailedtori@uwu.gal>",
-      "WhailMail Contributors",
-    ]
+    authors      = [ "ninetailedtori <ninetailedtori@uwu.gal>", "WhailMail Contributors" ]
+
+  [workspace.metadata.features]
+    # Deployment modes:
+    # - api-only (default): REST-API and ext. mailserver connectors ONLY
+    # - mailserver: Self-hosted/central instance (inc. IMAP/SMTP hosting)
+    # - indexing: Local full-text search (next step owo)
 
   [workspace.dependencies]
     # Async runtime
@@ -80,11 +83,8 @@
     thiserror = "2.0"
 
     # Logging
-    tracing = "0.1"
-    tracing-subscriber = { version = "0.3", features = [
-      "env-filter",
-      "json",
-    ] }
+    tracing            = "0.1"
+    tracing-subscriber = { version = "0.3", features = [ "env-filter", "json" ] }
 
     # Time
     chrono = { version = "0.4", features = [ "serde" ] }
@@ -94,6 +94,7 @@
     futures           = "0.3"
 
     # Utils
+    globset = { version = "0.4.18" }
     regex   = "1.12"
     reqwest = { version = "0.13", features = [ "json" ] }
     dirs    = "6.0"

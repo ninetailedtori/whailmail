@@ -9,3 +9,8 @@
   edition.workspace = true
   authors.workspace = true
   license.workspace = true
+
+[dependencies]
+  globset          = { workspace = true }
+  regex            = { workspace = true }
+  whailmail-common = { path = "../whailmail-common" }

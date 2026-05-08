@@ -6,6 +6,13 @@
 [build]
   rustc-wrapper = "sccache"
 
+[term]
+  verbose = true
+  color   = "auto"
+
+[doc]
+  open = true
+
 [env]
   CC     = "clang"
   CXX    = "clang++"
@@ -48,15 +55,40 @@
     "link-arg=-Wl,-O4,--sort-common,--as-needed,-z,relro,-z,now,-z,pack-relative-relocs",
   ]
 
+[target.x86_64-unknown-linux-musl]
+  rustflags = [
+    "-C",
+    "target-cpu=native",
+    "-C",
+    "force-frame-pointers=yes",
+    "-C",
+    "link-arg=-fuse-ld=lld",
+  ]
+
+[target.aarch64-unknown-linux-gnu]
+  rustflags = [
+    "-C",
+    "force-frame-pointers=yes",
+    "-C",
+    "link-arg=-fuse-ld=lld",
+  ]
+
+[target.aarch64-unknown-linux-musl]
+  rustflags = [
+    "-C",
+    "force-frame-pointers=yes",
+    "-C",
+    "link-arg=-fuse-ld=lld",
+  ]
+
 [target.x86_64-apple-darwin]
   rustflags = [ "-C", "split-debuginfo=packed" ]
 
 [target.aarch64-apple-darwin]
   rustflags = [ "-C", "split-debuginfo=packed" ]
 
-[term]
-  verbose = true
-  color   = "auto"
+[target.x86_64-pc-windows-msvc]
+  rustflags = [ "-C", "target-feature=+crt-static" ]
 
-[doc]
-  open = true
+[target.aarch64-pc-windows-msvc]
+  rustflags = [ "-C", "target-feature=+crt-static" ]

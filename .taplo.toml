@@ -8,9 +8,13 @@ include = [ "**/*.toml" ]
 exclude = [
   "**/*nested-1000.toml",
   "**/node_modules/**",
+  "**/dist/**",
+  "**/.nuxt/**",
+  "**/.vite/**",
+  "**/.output/**",
   "**/invalid/*",
   "test-data/**",
-  "target",
+  "backend/target/**",
 ]
 
 [formatting]
@@ -41,3 +45,36 @@ exclude = [
   [rule.formatting]
     array_auto_collapse = false
     reorder_keys        = true
+
+[[rule]]
+  include = [ "**/Cargo.toml" ]
+
+  [rule.formatting]
+    align_entries    = true
+    column_width     = 100
+    indent_tables    = true
+    trailing_newline = true
+    reorder_keys     = false
+
+    keys = [
+      "package",
+      "lib",
+      "bin",
+      "dependencies",
+      "dev-dependencies",
+      "build-dependencies",
+      "features",
+    ]
+
+[[rule]]
+  include = [ ".cargo/config.toml" ]
+
+  [rule.formatting]
+    align_entries         = true
+    column_width          = 120
+    indent_tables         = true
+    compact_inline_tables = false
+    trailing_newline      = true
+    reorder_keys          = false
+
+    keys = [ "build", "env", "profile", "target", "term", "doc" ]

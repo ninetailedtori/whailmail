@@ -1,5 +1,4 @@
 // SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
-
 // SPDX-FileContributor: WhailMail contributors
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
@@ -14,14 +13,16 @@
 //!
 //! **Use this to:** Import core types in `whailmail-db`, `whailmail-api`, etc.
 //!
-//! ```ignore
-//! use whailmail\_common::{SUser, SEmail, EAppError, RAppResult};
+//! ```no_run
+//! use whailmail_common::{EAppError, RAppResult, SEmail, SUser};
 //! ```
 
 pub mod config;
 pub mod constants;
 pub mod dto;
 pub mod error;
+pub mod macros;
+pub mod theme;
 pub mod types;
 
 // Re-export key types for convenience

@@ -25,3 +25,4 @@
   uuid               = { workspace = true }
   once_cell          = { workspace = true }
   rstest             = { workspace = true }
+  chrono             = "0.4.44"

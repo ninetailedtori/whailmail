@@ -1147,7 +1147,6 @@ dependencies = [
  "serde_json",
  "sha1",
  "thiserror",
- "tokio",
  "toml",
  "tracing",
  "tracing-subscriber",
@@ -1162,8 +1161,10 @@ version = "0.1.0"
 name = "whailmail-filters"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "globset",
  "regex",
+ "tracing",
  "whailmail-common",
 ]
 
@@ -1184,6 +1185,7 @@ name = "whailmail-tests"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "once_cell",
  "rstest",
  "serde",

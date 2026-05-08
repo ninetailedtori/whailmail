@@ -11,6 +11,9 @@
   license.workspace = true
 
 [dependencies]
-  globset          = { workspace = true }
-  regex            = { workspace = true }
   whailmail-common = { path = "../whailmail-common" }
+
+  chrono  = { workspace = true }
+  globset = { workspace = true }
+  regex   = { workspace = true }
+  tracing = { workspace = true }

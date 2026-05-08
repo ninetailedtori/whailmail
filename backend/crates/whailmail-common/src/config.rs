@@ -6,8 +6,8 @@
 //! # Configuration Structures — The Knobs & Dials (´｀)
 //!
 //! All the tunable stuff: database URLs, JWT secrets, log levels, mail server
-//! defaults, connection pool sizes. This is where environment-specific behavior
-//! lives.
+//! defaults, connection pool sizes. This is where environment-specific
+//! behaviour lives.
 //!
 //! **Organized by concern:**
 //! - App config (port, JWT secret, log level, environment)
@@ -29,9 +29,12 @@ pub struct SConfig
     pub db:          SDbConfig,
     pub jwt:         SJwtConfig,
     pub server:      SServerConfig,
+    #[cfg(feature = "mailserver")]
     pub imap_sync:   SImapSyncConfig,
+    #[cfg(feature = "mailserver")]
     pub smtp:        SSmtpConfig,
     pub mail_limits: SMailLimitsConfig,
+    #[cfg(feature = "mailserver")]
     pub features:    SFeaturesConfig
 }
 
@@ -61,6 +64,7 @@ pub struct SServerConfig
     pub cors_allowed_origins: Vec<String>
 }
 
+#[cfg(feature = "mailserver")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SImapSyncConfig
 {
@@ -70,6 +74,7 @@ pub struct SImapSyncConfig
     pub idle_timeout_secs:       u64
 }
 
+#[cfg(feature = "mailserver")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SSmtpConfig
 {
@@ -86,19 +91,40 @@ pub struct SMailLimitsConfig
     pub max_recipients_per_email:  u32
 }
 
+#[cfg(feature = "mailserver")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SFeaturesConfig
 {
     pub self_hosted_mode:   bool,
     pub encryption_enabled: bool,
-    pub enable_s3_storage:  bool
+    pub enable_s3_storage:  bool,
+    #[serde(default)]
+    pub s3_config:          Option<SFeatureS3>,
+    #[serde(default)]
+    pub encryption_config:  Option<SFeatureEncryption>
+}
+
+#[cfg(feature = "mailserver")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SFeatureS3
+{
+    pub bucket:   String,
+    pub region:   String,
+    pub endpoint: Option<String>
+}
+
+#[cfg(feature = "mailserver")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SFeatureEncryption
+{
+    pub algorithm:         String,
+    pub key_rotation_days: u32
 }
 
 // Helpers
 
 fn config_file() -> PathBuf
 {
-    // Panics if not found; idiomatic for startup-time config.
     std::fs::canonicalize("whailmail.toml").expect("config file not found")
 }
 
@@ -133,7 +159,6 @@ impl SConfig
 
         let mut config = load_toml()?;
 
-        // Env overrides
         config.jwt.secret = env::var("JWT_SECRET").unwrap_or(config.jwt.secret);
         config.server.host = get_env("SERVER_HOST", config.server.host)?;
         config.server.port = get_env("SERVER_PORT", config.server.port)?;
@@ -155,8 +180,12 @@ impl SConfig
         self.db.validate()?;
         self.jwt.validate()?;
         self.server.validate()?;
-        self.imap_sync.validate()?;
-        self.smtp.validate()?;
+        #[cfg(feature = "mailserver")]
+        {
+            self.imap_sync.validate()?;
+            self.smtp.validate()?;
+            self.features.validate()?;
+        }
         self.mail_limits.validate()?;
         Ok(())
     }
@@ -256,6 +285,7 @@ impl SServerConfig
     }
 }
 
+#[cfg(feature = "mailserver")]
 impl SImapSyncConfig
 {
     fn validate(&self) -> Result<(), Box<dyn std::error::Error>>
@@ -292,6 +322,7 @@ impl SImapSyncConfig
     }
 }
 
+#[cfg(feature = "mailserver")]
 impl SSmtpConfig
 {
     fn validate(&self) -> Result<(), Box<dyn std::error::Error>>
@@ -348,7 +379,58 @@ impl SMailLimitsConfig
     }
 }
 
+#[cfg(feature = "mailserver")]
 impl SFeaturesConfig
 {
-    // No validation needed; bools are always valid.
+    fn validate(&self) -> Result<(), Box<dyn std::error::Error>>
+    {
+        if self.enable_s3_storage
+        {
+            let s3 = self.s3_config.as_ref().ok_or(
+                "ENABLE_S3_STORAGE is true but [s3_config] section missing"
+            )?;
+
+            if s3.bucket.is_empty()
+            {
+                return Err("s3_config.bucket cannot be empty".into());
+            }
+            if s3.region.is_empty()
+            {
+                return Err("s3_config.region cannot be empty".into());
+            }
+        }
+
+        if self.encryption_enabled
+        {
+            let enc = self.encryption_config.as_ref().ok_or(
+                "ENCRYPTION_ENABLED is true but [encryption_config] section \
+                 missing"
+            )?;
+
+            if enc.algorithm.is_empty()
+            {
+                return Err(
+                    "encryption_config.algorithm cannot be empty".into()
+                );
+            }
+
+            if enc.key_rotation_days == 0 || enc.key_rotation_days > 365
+            {
+                return Err("encryption_config.key_rotation_days must be \
+                            within [1, 365]"
+                    .into());
+            }
+        }
+
+        if self.self_hosted_mode && !self.encryption_enabled
+        {
+            eprintln!(
+                "WARNING: SELF_HOSTED_MODE enabled without \
+                 ENCRYPTION_ENABLED. Consider enabling encryption for \
+                 self-hosted deployments."
+            );
+        }
+
+        Ok(())
+    }
 }

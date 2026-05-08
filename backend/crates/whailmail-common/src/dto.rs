@@ -20,7 +20,7 @@
 //! `password_hash` in responses) and to make validation straightforward.
 
 use {
-    crate::{EAccountType, EFilterAction, ETheme, SMailbox},
+    crate::{EAccountType, EFilterAction, SMailbox, theme::SThemeConfig},
     chrono::{DateTime, Utc},
     serde::{Deserialize, Serialize}
 };
@@ -179,7 +179,7 @@ pub struct SFilterResp
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SUpdateSettingsReq
 {
-    pub theme:                 Option<ETheme>,
+    pub theme:                 Option<SThemeConfig>,
     pub notifications_enabled: Option<bool>,
     pub notification_sound:    Option<bool>,
     pub auto_sync_enabled:     Option<bool>,

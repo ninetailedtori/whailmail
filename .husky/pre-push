@@ -1,4 +1,11 @@
 #!/usr/bin/env sh
+#
+# SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
+# SPDX-FileContributor: WhailMail contributors
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
 . "$(dirname "$0")/h"
 
 cd frontend && pnpm run build && pnpm run test

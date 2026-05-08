@@ -1,5 +1,11 @@
+// SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
+// SPDX-FileContributor: WhailMail contributors
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 //! Test utilities & fixtures shared across all tests
 
+pub mod fixtures;
 pub mod integrations;
 
 use {tempfile::TempDir, uuid::Uuid, whailmail_common::AppConfig};

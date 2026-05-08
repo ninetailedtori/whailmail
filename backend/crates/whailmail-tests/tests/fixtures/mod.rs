@@ -2,3 +2,7 @@
 // SPDX-FileContributor: WhailMail contributors
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
+
+pub use whailmail_common::*;
+
+pub mod mail_samples;

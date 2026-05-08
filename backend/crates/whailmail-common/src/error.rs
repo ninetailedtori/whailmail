@@ -1,112 +1,155 @@
-use std::error::Error;
+// SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
+// SPDX-FileContributor: WhailMail contributors
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
-// error.rs
+//! (´・ω・`) Error handling for whailmail
+//!
+//! This module defines `EAppError`, the unified error type that flows through
+//! the entire application — from low-level protocol crates (IMAP, SMTP,
+//! indexing) all the way up to HTTP responses sent to the Electron frontend.
+//!
+//! ## Philosophy
+//!
+//! Rather than letting errors scatter across the codebase with inconsistent
+//! handling, we wrap everything into semantic variants that know:
+//! - **What HTTP status code to return** (401, 503, etc.)
+//! - **Whether it's worth retrying** (transient vs. permanent)
+//! - **How to log it appropriately** (debug, warn, error — with context)
+//!
+//! ## Error Layering
+//!
+//! Errors bubble up from low-level crates and get wrapped with business
+//! context:
+//!
+//! ```ignore
+//! IMAP fails to connect
+//!   - ImapConnectionError(anyhow::Error)
+//!   - .context("Failed to fetch inbox")?
+//!   - Context { message, source: ImapConnectionError }
+//!   - Axum handler logs + serializes to JSON
+//! ```
+//!
+//! The `Context` variant lets you attach human-readable context at any layer
+//! without losing the original error type. Your `status_code()` walks the chain
+//! to find the root cause.
+//!
+//! ## Usage
+//!
+//! Wrap external errors in protocol-specific variants, add context in handlers:
+//!
+//! ```ignore
+//! // Low-level crate
+//! pub async fn fetch(&self) -> RAppResult<Vec<Message>> {
+//!     self.connection.fetch().await
+//!         .map\_err(|e| EAppError::ImapCommandError(anyhow::Error::from(e)))
+//! }
+//!
+//! // Handler
+//! pub async fn get\_inbox(State(imap): State<ImapClient>)
+//! -> Result<Json<Vec<Message>>, EAppError> {
+//!     imap.fetch()
+//!         .await
+//!         .context("Failed to fetch user inbox")?
+//! }
+//! ```
+//!
+//! The frontend gets a clean error chain instead of a Rust backtrace. Everyone
+//! wins.
+
 use {
-    anyhow::Context,
     serde_json::json,
+    std::error::Error,
     thiserror::Error,
-    tracing::{error, warn}
+    tracing::{debug, error, warn}
 };
 
 #[derive(Error, Debug)]
 pub enum EAppError
 {
-    // Auth & JWT
+    // 4xx - Client Errors
+
+    // 400 - Bad Request
+    #[error("Validation error")]
+    ValidationError(String),
+
+    #[error("Invalid request")]
+    InvalidRequest(String),
+
+    #[error("Mail parsing failed")]
+    MailParsingError(#[source] anyhow::Error),
+
+    // 401 - Unauthorized
     #[error("Invalid credentials")]
     InvalidCredentials,
-
-    #[error("Unauthorized")]
-    Unauthorized,
-
-    #[error("JWT token expired")]
-    TokenExpired,
 
     #[error("Invalid token format")]
     InvalidToken,
 
-    // Validation
-    #[error("Validation error")]
-    ValidationError(String),
+    #[error("JWT token expired")]
+    TokenExpired,
 
-    // Not found
-    #[error("Record not found")]
+    #[error("IMAP authentication failed")]
+    ImapAuthError(#[source] anyhow::Error),
+
+    #[error("SMTP authentication failed")]
+    SmtpAuthError(#[source] anyhow::Error),
+
+    // 403 - Forbidden
+    #[error("Unauthorized")]
+    Unauthorized,
+
+    #[error("Insufficient permissions")]
+    Forbidden,
+
+    #[error("TLS/SSL error")]
+    TlsError(#[source] anyhow::Error),
+
+    #[error("Account locked")]
+    AccountLocked,
+
+    // 404 - Not Found
+    #[error("Resource not found")]
     NotFound(String),
 
-    // Conflicts
+    #[error("Mailbox not found")]
+    MailboxNotFound(String),
+
+    // 409 - Conflict
     #[error("Resource already exists")]
     DuplicateResource(String),
 
     #[error("Conflict")]
     Conflict(String),
 
-    // Protocol - IMAP
-    #[error("IMAP connection failed")]
-    ImapConnectionError(#[source] anyhow::Error),
+    // 413 - Payload Too Large
+    #[error("File too large")]
+    FileTooLarge(String),
 
-    #[error("IMAP authentication failed")]
-    ImapAuthError(#[source] anyhow::Error),
+    // 415 - Unsupported Media Type
+    #[error("Unsupported media type")]
+    UnsupportedMediaType,
 
-    #[error("IMAP command failed")]
-    ImapCommandError(#[source] anyhow::Error),
-
-    // Protocol - SMTP
-    #[error("SMTP connection failed")]
-    SmtpConnectionError(#[source] anyhow::Error),
-
-    #[error("SMTP authentication failed")]
-    SmtpAuthError(#[source] anyhow::Error),
-
-    #[error("SMTP send failed")]
-    SmtpSendError(#[source] anyhow::Error),
-
+    // 422 - Unprocessable Entity
     #[error("Invalid recipient")]
     InvalidRecipient(String),
 
-    // Mail processing
-    #[error("Mail parsing failed")]
-    MailParsingError(#[source] anyhow::Error),
+    // 429 - Too Many Requests
+    #[error("Rate limit exceeded")]
+    RateLimited,
 
+    #[error("Quota exceeded")]
+    QuotaExceeded(String),
+
+    // 5xx - Server Errors
+
+    // 500 - Internal Server Error
     #[error("Mail encoding failed")]
     MailEncodingError(#[source] anyhow::Error),
 
     #[error("Filter processing failed")]
     FilterError(#[source] anyhow::Error),
 
-    // Indexing
-    #[error("Indexing failed")]
-    IndexError(#[source] anyhow::Error),
-
-    #[error("Search failed")]
-    SearchError(#[source] anyhow::Error),
-
-    // Network
-    #[error("Request timeout")]
-    Timeout,
-
-    #[error("Connection refused")]
-    ConnectionRefused,
-
-    #[error("TLS/SSL error")]
-    TlsError(#[source] anyhow::Error),
-
-    // Resource limits
-    #[error("File too large")]
-    FileTooLarge(String),
-
-    #[error("Quota exceeded")]
-    QuotaExceeded(String),
-
-    #[error("Rate limit exceeded")]
-    RateLimited,
-
-    // API & requests
-    #[error("Invalid request")]
-    InvalidRequest(String),
-
-    #[error("Unsupported media type")]
-    UnsupportedMediaType,
-
-    // Server
     #[error("Database error")]
     DatabaseError(#[source] anyhow::Error),
 
@@ -119,8 +162,64 @@ pub enum EAppError
     #[error("Internal server error")]
     InternalError(#[source] anyhow::Error),
 
+    // 501 - Not Implemented
+    #[error("Feature not implemented")]
+    NotImplemented,
+
+    // 503 - Service Unavailable
+    #[error("IMAP connection failed")]
+    ImapConnectionError(#[source] anyhow::Error),
+
+    #[error("IMAP command failed")]
+    ImapCommandError(#[source] anyhow::Error),
+
+    #[error("SMTP connection failed")]
+    SmtpConnectionError(#[source] anyhow::Error),
+
+    #[error("SMTP send failed")]
+    SmtpSendError(#[source] anyhow::Error),
+
+    #[error("Connection refused")]
+    ConnectionRefused,
+
+    #[error("Indexing failed")]
+    IndexError(#[source] anyhow::Error),
+
+    #[error("Search failed")]
+    SearchError(#[source] anyhow::Error),
+
     #[error("Service unavailable")]
-    ServiceUnavailable
+    ServiceUnavailable,
+
+    #[error("Service not initialized")]
+    ServiceNotInitialized,
+
+    // 504 - Gateway Timeout
+    #[error("Request timeout")]
+    Timeout,
+
+    // Custom Context
+    #[error("{message}")]
+    Context
+    {
+        message: String,
+        #[source]
+        source:  Option<Box<EAppError>>
+    }
+}
+
+/// Helper trait for converting any error to EAppError with context
+trait TErrorContext<T>
+{
+    fn context<S: ToString>(self, msg: S) -> anyhow::Result<T>;
+}
+
+impl<T> TErrorContext<T> for RAppResult<T>
+{
+    fn context<S: ToString>(self, msg: S) -> anyhow::Result<T>
+    {
+        self.map_err(|err| anyhow::anyhow!("{}: {}", msg.to_string(), err))
+    }
 }
 
 impl EAppError
@@ -129,25 +228,77 @@ impl EAppError
     {
         match self
         {
-            // 4xx
+            // 4xx - Client Errors
+
+            // 400 - Bad Request
+            | EAppError::ValidationError(_)
+            | EAppError::InvalidRequest(_)
+            | EAppError::MailParsingError(_) => 400,
+
+            // 401 - Unauthorized
             | EAppError::InvalidCredentials
             | EAppError::InvalidToken
-            | EAppError::TokenExpired => 401,
-            | EAppError::Unauthorized => 403,
-            | EAppError::NotFound(_) => 404,
+            | EAppError::TokenExpired
+            | EAppError::ImapAuthError(_)
+            | EAppError::SmtpAuthError(_) => 401,
+
+            // 403 - Forbidden
+            | EAppError::Unauthorized
+            | EAppError::Forbidden
+            | EAppError::TlsError(_) => 403,
+
+            // 404 - Not Found
+            | EAppError::NotFound(_) | EAppError::MailboxNotFound(_) => 404,
+
+            // 409 - Conflict
             | EAppError::DuplicateResource(_) | EAppError::Conflict(_) => 409,
-            | EAppError::ValidationError(_) | EAppError::InvalidRequest(_) =>
-            {
-                400
-            },
-            | EAppError::UnsupportedMediaType => 415,
+
+            // 413 - Payload Too Large
             | EAppError::FileTooLarge(_) => 413,
+
+            // 415 - Unsupported Media Type
+            | EAppError::UnsupportedMediaType => 415,
+
+            // 422 - Unprocessable Entity
             | EAppError::InvalidRecipient(_) => 422,
-            | EAppError::RateLimited => 429,
-            // 5xx
+
+            // 423 - Locked
+            | EAppError::AccountLocked => 423,
+
+            // 429 - Too Many Requests
+            | EAppError::RateLimited | EAppError::QuotaExceeded(_) => 429,
+
+            // 5xx - Server Errors
+
+            // 500 - Internal Server Error
+            | EAppError::MailEncodingError(_)
+            | EAppError::FilterError(_)
+            | EAppError::DatabaseError(_)
+            | EAppError::ConfigError(_)
+            | EAppError::FileSystemError(_)
+            | EAppError::InternalError(_) => 500,
+
+            // 501 - Not Implemented
+            | EAppError::NotImplemented => 501,
+
+            // 503 - Service Unavailable
+            | EAppError::ImapConnectionError(_)
+            | EAppError::ImapCommandError(_)
+            | EAppError::SmtpConnectionError(_)
+            | EAppError::SmtpSendError(_)
+            | EAppError::ConnectionRefused
+            | EAppError::IndexError(_)
+            | EAppError::SearchError(_)
+            | EAppError::ServiceUnavailable
+            | EAppError::ServiceNotInitialized => 503,
+
+            // 504 - Gateway Timeout
             | EAppError::Timeout => 504,
-            | EAppError::ServiceUnavailable => 503,
-            | _ => 500
+
+            // Custom Context
+            | EAppError::Context {
+                source, ..
+            } => source.as_ref().map(|s| (**s).status_code()).unwrap_or(500)
         }
     }
 
@@ -155,11 +306,21 @@ impl EAppError
     {
         matches!(
             self,
+            // Network/transient
             EAppError::Timeout
-                | EAppError::ConnectionRefused
-                | EAppError::ServiceUnavailable
-                | EAppError::ImapConnectionError(_)
-                | EAppError::SmtpConnectionError(_)
+            | EAppError::ConnectionRefused
+            | EAppError::ServiceUnavailable
+            | EAppError::ServiceNotInitialized
+            | EAppError::ImapConnectionError(_)
+            | EAppError::ImapCommandError(_)
+            | EAppError::SmtpConnectionError(_)
+            | EAppError::SmtpSendError(_)
+            | EAppError::IndexError(_)
+            | EAppError::SearchError(_)
+            // Rate limiting (with backoff)
+            | EAppError::RateLimited
+            // Possibly transient database issues
+            | EAppError::DatabaseError(_)
         )
     }
 
@@ -168,37 +329,61 @@ impl EAppError
     {
         match self
         {
-            // Auth errors → warning level
+            // Expected client errors - debug or no log
+            | EAppError::ValidationError(_)
+            | EAppError::InvalidRequest(_)
+            | EAppError::NotFound(_)
+            | EAppError::MailboxNotFound(_)
+            | EAppError::NotImplemented =>
+            {
+                debug!(error = %self, "Client request rejected");
+            },
+
+            // Auth/access failures - warn (security/compliance relevant)
             | EAppError::InvalidCredentials
             | EAppError::InvalidToken
             | EAppError::TokenExpired
-            | EAppError::Unauthorized =>
+            | EAppError::Unauthorized
+            | EAppError::Forbidden
+            | EAppError::AccountLocked =>
             {
-                warn!(error = %self, error_chain = ?self.source(), "Authentication failed");
+                warn!(error = %self, "Authentication/authorization failed");
             },
-            // Client errors → info level
-            | EAppError::ValidationError(_)
-            | EAppError::InvalidRequest(_)
-            | EAppError::NotFound(_) =>
-            {
-                warn!(error = %self, "Client error");
-            },
-            // Server/retryable errors → error level
-            | EAppError::Timeout | EAppError::ConnectionRefused =>
+
+            // Transient system errors - error + retryable
+            | EAppError::Timeout
+            | EAppError::ConnectionRefused
+            | EAppError::ServiceNotInitialized =>
             {
                 error!(error = %self, retryable = true, "Transient error");
             },
-            // Everything else → error level
+
+            // Actual failures - error with context
             | _ =>
             {
                 error!(
                     error = %self,
                     error_chain = ?self.source(),
                     retryable = self.is_retryable(),
-                    "Error occurred"
+                    "Server error"
                 );
             }
         }
+    }
+
+    /// Get error chain (including source errors)
+    fn unwind(&self) -> Vec<String>
+    {
+        let mut chain = vec![self.to_string()];
+        let mut source = self.source();
+
+        while let Some(err) = source
+        {
+            chain.push(err.to_string());
+            source = err.source();
+        }
+
+        chain
     }
 
     /// JSON representation for API responses
@@ -206,24 +391,11 @@ impl EAppError
     {
         json!({
             "error": self.to_string(),
+            "chain": self.unwind(),
             "code": self.status_code(),
             "timestamp": chrono::Utc::now().to_rfc3339(),
+            "retryable": self.is_retryable(),
         })
-    }
-}
-
-// Helper trait for converting any error to EAppError with context
-trait TErrorContext<T>
-{
-    fn app_context<S: ToString>(self, msg: S) -> anyhow::Result<T>;
-}
-
-impl<T, E> TErrorContext<T> for Result<T, E>
-where E: std::error::Error + Send + Sync + 'static
-{
-    fn app_context<S: ToString>(self, msg: S) -> anyhow::Result<T>
-    {
-        self.context(msg.to_string())
     }
 }
 
@@ -243,13 +415,11 @@ impl From<std::io::Error> for EAppError
     }
 }
 
-// Catch-all for anything that converts to anyhow::Error
 impl From<anyhow::Error> for EAppError
 {
     fn from(err: anyhow::Error) -> Self { EAppError::InternalError(err) }
 }
 
-// Specific structured errors
 impl From<serde_json::error::Error> for EAppError
 {
     fn from(err: serde_json::error::Error) -> Self

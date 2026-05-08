@@ -21,6 +21,14 @@
 //! Message-ID header (RFC 5322).
 
 use {
+    crate::{
+        builder_flag,
+        builder_setter,
+        builder_setter_opt,
+        builder_vec_push,
+        impl_hashed_id,
+        theme::SThemeConfig
+    },
     chrono::{DateTime, Utc},
     serde::{Deserialize, Serialize},
     sha1::{Digest, Sha1},
@@ -28,18 +36,10 @@ use {
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum ETheme
-{
-    Dark,
-    Light,
-    System
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SSettings
 {
     pub user_id:               Uuid,
-    pub theme:                 ETheme,
+    pub theme:                 SThemeConfig,
     pub notifications_enabled: bool,
     pub notification_sound:    bool,
     pub auto_sync_enabled:     bool,
@@ -145,6 +145,25 @@ pub struct SEmail
     pub flags:           Vec<String>
 }
 
+pub struct SEmailBuilder
+{
+    account_id:      Uuid,
+    mailbox_id:      Uuid,
+    message_id:      String,
+    from:            String,
+    to:              Vec<String>,
+    subject:         String,
+    body_text:       String,
+    cc:              Vec<String>,
+    bcc:             Vec<String>,
+    body_html:       Option<String>,
+    is_read:         bool,
+    is_starred:      bool,
+    is_archived:     bool,
+    has_attachments: bool,
+    flags:           Vec<String>
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SAttachment
 {
@@ -157,27 +176,6 @@ pub struct SAttachment
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SFilter
-{
-    pub id:         Uuid,
-    pub user_id:    Uuid,
-    pub name:       String,
-    pub conditions: SFilterConditions,
-    pub actions:    Vec<EFilterAction>,
-    pub enabled:    bool,
-    pub created_at: DateTime<Utc>
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SFilterConditions
-{
-    pub from_pattern:    Option<String>,
-    pub to_pattern:      Option<String>,
-    pub subject_pattern: Option<String>,
-    pub body_contains:   Option<String>
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EFilterAction
 {
     MoveTo(String),
@@ -186,6 +184,71 @@ pub enum EFilterAction
     MarkAsRead,
     MarkAsSpam,
     Label(String)
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct SFilterCriterion
+{
+    // Pattern
+    pub from_ptn: Option<String>,
+    pub to_ptn:   Option<String>,
+    pub cc_ptn:   Option<String>,
+    pub subj_ptn: Option<String>,
+    pub body_ptn: Option<String>,
+
+    // Metadata
+    pub has_attachments: Option<bool>,
+    pub flags:           Option<Vec<String>>,
+    pub min_size_bytes:  Option<u64>,
+    pub max_size_bytes:  Option<u64>,
+
+    // Times
+    pub received_after:  Option<DateTime<Utc>>,
+    pub received_before: Option<DateTime<Utc>>,
+
+    // States
+    pub is_read:    Option<bool>,
+    pub is_starred: Option<bool>
+}
+
+#[derive(Debug, Default)]
+pub struct SFilterCriterionBuilder
+{
+    from_ptn:        Option<String>,
+    to_ptn:          Option<String>,
+    cc_ptn:          Option<String>,
+    subj_ptn:        Option<String>,
+    body_ptn:        Option<String>,
+    has_attachments: Option<bool>,
+    flags:           Vec<String>,
+    min_size_bytes:  Option<u64>,
+    max_size_bytes:  Option<u64>,
+    received_after:  Option<DateTime<Utc>>,
+    received_before: Option<DateTime<Utc>>,
+    is_read:         Option<bool>,
+    is_starred:      Option<bool>
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SFilter
+{
+    pub id:         Uuid,
+    pub user_id:    Uuid,
+    pub name:       String,
+    pub criteria:   Vec<SFilterCriterion>,
+    pub actions:    Vec<EFilterAction>,
+    pub enabled:    bool,
+    pub created_at: DateTime<Utc>
+}
+
+pub struct SFilterBuilder
+{
+    id:       Uuid,
+    user_id:  Uuid,
+    name:     String,
+    criteria: Vec<SFilterCriterion>,
+    actions:  Vec<EFilterAction>,
+    enabled:  bool
 }
 
 /// Deterministically hash a string into a UUID v5.
@@ -211,103 +274,6 @@ pub trait TWithHashedId
     fn new_hashed(hash_source: String) -> Self;
 }
 
-/// Generates a `.new()` constructor that auto-hashes the ID.
-/// Pass the struct type, the hashing strategy (email or account+email),
-/// and any extra fields. We'll fill in timestamps and hash the ID for you.
-///
-/// Saves you from writing the same "hash this, set timestamps, return"
-/// boilerplate seventeen times.
-macro_rules! impl_hashed_id {
-    ($struct_type:ty,email, $($field:ident : $field_type:ty),*) => {
-        impl TWithHashedId for $struct_type
-        {
-            fn new_hashed(email: String) -> Self
-            {
-                Self {
-                    id: hash_to_uuid(&email),
-                    email,
-                    password_hash: String::new(),
-                    created_at: Utc::now(),
-                    updated_at: Utc::now()
-                }
-            }
-        }
-
-        impl $struct_type
-        {
-            pub fn new(email: String, password_hash: String) -> Self
-            {
-                Self {
-                    id: hash_to_uuid(&email),
-                    email,
-                    password_hash,
-                    created_at: Utc::now(),
-                    updated_at: Utc::now()
-                }
-            }
-        }
-    };
-
-    ($struct_type:ty,account,email, $($field:ident : $field_type:ty),*) => {
-        impl TWithHashedId for $struct_type
-        {
-            fn new_hashed(email: String) -> Self
-            {
-                Self {
-                    id: hash_to_uuid(&format!("account:{}", email)),
-                    email,
-                    user_id: Uuid::nil(),
-                    account_type: EAccountType::Custom {
-                        smtp_host: String::new(),
-                        imap_host: String::new()
-                    },
-                    display_name: None,
-                    imap_host: String::new(),
-                    imap_port: 993,
-                    smtp_host: String::new(),
-                    smtp_port: 587,
-                    username: String::new(),
-                    password: String::new(),
-                    use_tls: true,
-                    last_sync: None,
-                    sync_enabled: false,
-                    created_at: Utc::now(),
-                    updated_at: Utc::now()
-                }
-            }
-        }
-
-        impl $struct_type
-        {
-            pub fn new(
-                user_id: Uuid,
-                email: String,
-                account_type: EAccountType
-            ) -> Self
-            {
-                Self {
-                    id: hash_to_uuid(&format!("account:{}", email)),
-                    user_id,
-                    email,
-                    account_type,
-                    display_name: None,
-                    imap_host: String::new(),
-                    imap_port: 993,
-                    smtp_host: String::new(),
-                    smtp_port: 587,
-                    username: String::new(),
-                    password: String::new(),
-                    use_tls: true,
-                    last_sync: None,
-                    sync_enabled: false,
-                    created_at: Utc::now(),
-                    updated_at: Utc::now()
-                }
-            }
-        }
-    };
-}
-
 impl SSettings
 {
     /// Create settings for a user with sensible defaults.
@@ -317,7 +283,7 @@ impl SSettings
         let now = Utc::now();
         Self {
             user_id,
-            theme: ETheme::Dark,
+            theme: SThemeConfig::default(),
             notifications_enabled: true,
             notification_sound: true,
             auto_sync_enabled: true,
@@ -422,17 +388,18 @@ impl SFilter
     pub fn new(
         user_id: Uuid,
         name: String,
-        conditions: SFilterConditions,
-        actions: Vec<EFilterAction>
+        criteria: Vec<SFilterCriterion>,
+        actions: Vec<EFilterAction>,
+        enabled: Option<bool>
     ) -> Self
     {
         Self {
             id: Uuid::new_v4(),
             user_id,
             name,
-            conditions,
+            criteria,
             actions,
-            enabled: true,
+            enabled: enabled.unwrap_or(true),
             created_at: Utc::now()
         }
     }
@@ -440,3 +407,169 @@ impl SFilter
 
 impl_hashed_id!(SUser, email, password_hash: String);
 impl_hashed_id!(SAccount, account, email, user_id: Uuid);
+
+impl SEmailBuilder
+{
+    builder_setter!(from, from, String);
+
+    builder_setter!(subject, subject, String);
+
+    builder_setter!(body_text, body_text, String);
+
+    builder_setter_opt!(body_html, body_html, String);
+
+    builder_vec_push!(to, to, String);
+
+    builder_vec_push!(cc, cc, String);
+
+    builder_vec_push!(bcc, bcc, String);
+
+    builder_vec_push!(flag, flags, String);
+
+    builder_flag!(is_read, is_read);
+
+    builder_flag!(is_starred, is_starred);
+
+    builder_flag!(is_archived, is_archived);
+
+    builder_flag!(has_attachments, has_attachments);
+
+    pub fn new(account_id: Uuid, mailbox_id: Uuid, message_id: String) -> Self
+    {
+        Self {
+            account_id,
+            mailbox_id,
+            message_id,
+            from: String::new(),
+            to: vec![],
+            subject: String::new(),
+            body_text: String::new(),
+            cc: vec![],
+            bcc: vec![],
+            body_html: None,
+            is_read: false,
+            is_starred: false,
+            is_archived: false,
+            has_attachments: false,
+            flags: vec![]
+        }
+    }
+
+    pub fn build(self) -> SEmail
+    {
+        let now = Utc::now();
+        SEmail {
+            id:              Uuid::new_v4(),
+            mailbox_id:      self.mailbox_id,
+            account_id:      self.account_id,
+            message_id:      self.message_id,
+            from:            self.from,
+            to:              self.to,
+            cc:              self.cc,
+            bcc:             self.bcc,
+            subject:         self.subject,
+            body_text:       self.body_text,
+            body_html:       self.body_html,
+            is_read:         self.is_read,
+            is_starred:      self.is_starred,
+            is_archived:     self.is_archived,
+            has_attachments: self.has_attachments,
+            received_at:     now,
+            created_at:      now,
+            updated_at:      now,
+            flags:           self.flags
+        }
+    }
+}
+
+impl SFilterCriterionBuilder
+{
+    builder_setter_opt!(set_from_ptn, from_ptn, String);
+
+    builder_setter_opt!(set_to_ptn, to_ptn, String);
+
+    builder_setter_opt!(set_cc_ptn, cc_ptn, String);
+
+    builder_setter_opt!(set_subj_ptn, subj_ptn, String);
+
+    builder_setter_opt!(set_body_ptn, body_ptn, String);
+
+    builder_setter_opt!(set_has_attachments, has_attachments, bool);
+
+    builder_vec_push!(flag, flags, String);
+
+    builder_setter_opt!(set_min_size, min_size_bytes, u64);
+
+    builder_setter_opt!(set_max_size, max_size_bytes, u64);
+
+    builder_setter_opt!(set_received_after, received_after, DateTime<Utc>);
+
+    builder_setter_opt!(set_received_before, received_before, DateTime<Utc>);
+
+    builder_setter_opt!(set_is_read, is_read, bool);
+
+    builder_setter_opt!(set_is_starred, is_starred, bool);
+
+    pub fn new() -> Self { Self::default() }
+
+    pub fn build(self) -> SFilterCriterion
+    {
+        SFilterCriterion {
+            from_ptn:        self.from_ptn,
+            to_ptn:          self.to_ptn,
+            cc_ptn:          self.cc_ptn,
+            subj_ptn:        self.subj_ptn,
+            body_ptn:        self.body_ptn,
+            has_attachments: self.has_attachments,
+            flags:           if self.flags.is_empty()
+            {
+                None
+            }
+            else
+            {
+                Some(self.flags)
+            },
+            min_size_bytes:  self.min_size_bytes,
+            max_size_bytes:  self.max_size_bytes,
+            received_after:  self.received_after,
+            received_before: self.received_before,
+            is_read:         self.is_read,
+            is_starred:      self.is_starred
+        }
+    }
+}
+
+impl SFilterBuilder
+{
+    builder_vec_push!(criterion, criteria, SFilterCriterion);
+
+    builder_vec_push!(action, actions, EFilterAction);
+
+    builder_flag!(enabled, enabled);
+
+    pub fn new(id: Uuid, user_id: Uuid, name: impl Into<String>) -> Self
+    {
+        Self {
+            id,
+            user_id,
+            name: name.into(),
+            criteria: Vec::new(),
+            actions: Vec::new(),
+            enabled: true
+        }
+    }
+
+    pub fn build(self) -> SFilter
+    {
+        let now = Utc::now();
+        SFilter {
+            id:         self.id,
+            user_id:    self.user_id,
+            name:       self.name,
+            criteria:   self.criteria,
+            actions:    self.actions,
+            enabled:    self.enabled,
+            created_at: now
+        }
+    }
+}

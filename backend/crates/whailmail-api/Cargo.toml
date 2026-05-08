@@ -9,3 +9,7 @@
   edition.workspace = true
   authors.workspace = true
   license.workspace = true
+
+[features]
+  default    = [  ]
+  mailserver = [  ] # [ "whailmail-smtp", "whailmail-imap", "dep:tokio-util" ]

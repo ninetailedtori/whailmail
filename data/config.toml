@@ -35,3 +35,12 @@
   self_hosted_mode   = false
   encryption_enabled = false
   enable_s3_storage  = false
+
+  [features.encryption_config]
+    algorithm         = "aes-256-gcm"
+    key_rotation_days = 90
+
+  [features.s3_config]
+    bucket   = "whailmail"
+    region   = "us-east-1"
+    endpoint = "v1"

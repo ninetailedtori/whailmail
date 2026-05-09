@@ -5,7 +5,35 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
+### Lint & Format
+#
+. ".husky/h"
+. ".husky/utils"
 
-. "$(dirname "$0")/h"
+print_header "Pre-commit checks  ୧༼ಠ益ಠ༽୨" "$BLUE"
+check_all_tools
 
-cd frontend && pnpm run lint && pnpm run typecheck && pnpm run format
+# Backend checks
+print_stage "Rust backend"
+run_check "Running clippy..." "pnpm run lint:backend" "Clippy passed" "Clippy found issues"
+run_check "Formatting with rustfmt..." "pnpm run fmt:backend" "Code formatted" "Formatting failed"
+
+echo ""
+
+# Frontend checks
+print_stage "Frontend (Vue/Nuxt)"
+run_check "Linting with ESLint..." "pnpm run lint:frontend" "Linting passed" "Linting failed"
+run_check "Type checking with TypeScript..." "pnpm run typecheck:frontend" "Types are correct (´∇｀)" "Type checking failed"
+run_check "Formatting code..." "pnpm --dir frontend run fmt" "Code formatted" "Formatting failed"
+
+echo ""
+
+# Config files
+print_stage "Configuration files"
+run_check "Formatting TOML..." "pnpm run fmt:toml" "TOML formatted" "TOML formatting failed"
+run_check "Formatting YAML..." "pnpm run fmt:yaml" "YAML formatted" "YAML formatting failed"
+run_check "Formatting Markdown..." "pnpm run fmt:markdown" "Markdown formatted" "Markdown formatting failed"
+
+echo ""
+print_header "All checks passed!  ໒( ◔ ▾ ◔ )७" "$GREEN"
+exit 0

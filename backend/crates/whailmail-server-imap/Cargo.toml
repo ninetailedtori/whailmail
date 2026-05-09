@@ -4,12 +4,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 [package]
-  name              = "whailmail-imap"
+  name              = "whailmail-server-imap"
   version.workspace = true
   edition.workspace = true
   authors.workspace = true
   license.workspace = true
-
-[features]
-  default    = [ "mailserver" ]
-  mailserver = [  ]

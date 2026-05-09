@@ -12,4 +12,4 @@
 
 [features]
   default    = [  ]
-  mailserver = [  ] # [ "whailmail-smtp", "whailmail-imap", "dep:tokio-util" ]
+  mailserver = [  ] # [ "whailmail-server-smtp", "whailmail-server-imap", "dep:tokio-util" ]

@@ -841,9 +841,9 @@ dependencies = [
 
 [[package]]
 name = "tokio"
-version = "1.52.2"
+version = "1.52.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "110a78583f19d5cdb2c5ccf321d1290344e71313c6c37d43520d386027d18386"
+checksum = "8fc7f01b389ac15039e4dc9531aa973a135d7a4135281b12d7c1bc79fd57fffe"
 dependencies = [
  "bytes",
  "libc",
@@ -1133,11 +1133,11 @@ dependencies = [
 
 [[package]]
 name = "whailmail-api"
-version = "0.1.0"
+version = "0.0.1"
 
 [[package]]
 name = "whailmail-common"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1155,11 +1155,11 @@ dependencies = [
 
 [[package]]
 name = "whailmail-db"
-version = "0.1.0"
+version = "0.0.1"
 
 [[package]]
 name = "whailmail-filters"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "chrono",
  "globset",
@@ -1169,20 +1169,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "whailmail-imap"
-version = "0.1.0"
-
-[[package]]
 name = "whailmail-indexer"
-version = "0.1.0"
+version = "0.0.1"
 
 [[package]]
-name = "whailmail-smtp"
-version = "0.1.0"
+name = "whailmail-server-imap"
+version = "0.0.1"
+
+[[package]]
+name = "whailmail-server-smtp"
+version = "0.0.1"
 
 [[package]]
 name = "whailmail-tests"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1199,9 +1199,9 @@ dependencies = [
  "whailmail-common",
  "whailmail-db",
  "whailmail-filters",
- "whailmail-imap",
  "whailmail-indexer",
- "whailmail-smtp",
+ "whailmail-server-imap",
+ "whailmail-server-smtp",
 ]
 
 [[package]]

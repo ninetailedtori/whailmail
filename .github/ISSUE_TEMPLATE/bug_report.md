@@ -1,15 +1,14 @@
----
+______________________________________________________________________
+
 # SPDX-FileCopyrightText: 2026-Present ninetailedtori <ninetailedtori@uwu.gal>
+
 # SPDX-FileContributor: WhailMail contributors
-#
+
+# 
+
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-name: Bug report
-about: Create a report to help us improve
-title: ""
-labels: ""
-assignees: ""
----
+## name: Bug report about: Create a report to help us improve title: "" labels: "" assignees: ""
 
 **Describe the bug**
 A clear and concise description of what the bug is.
@@ -18,9 +17,9 @@ A clear and concise description of what the bug is.
 Steps to reproduce the behavior:
 
 1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+1. Click on '....'
+1. Scroll down to '....'
+1. See error
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.

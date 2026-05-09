@@ -5,24 +5,22 @@
   publish           = false
 
 [dependencies]
-  # All internal crates
-  whailmail-common  = { path = "../whailmail-common" }
-  whailmail-api     = { path = "../whailmail-api" }
-  whailmail-db      = { path = "../whailmail-db" }
-  whailmail-filters = { path = "../whailmail-filters" }
-  whailmail-imap    = { path = "../whailmail-imap" }
-  whailmail-smtp    = { path = "../whailmail-smtp" }
-  whailmail-indexer = { path = "../whailmail-indexer" }
+  whailmail-api.workspace         = true
+  whailmail-common.workspace      = true
+  whailmail-db.workspace          = true
+  whailmail-filters.workspace     = true
+  whailmail-indexer.workspace     = true
+  whailmail-server-imap.workspace = true
+  whailmail-server-smtp.workspace = true
 
-  # Runtime & logging
-  tokio              = { workspace = true }
-  tracing            = { workspace = true }
-  tracing-subscriber = { workspace = true }
-  serde              = { workspace = true }
-  serde_json         = { workspace = true }
-  anyhow             = { workspace = true }
-  tempfile           = { workspace = true }
-  uuid               = { workspace = true }
-  once_cell          = { workspace = true }
-  rstest             = { workspace = true }
-  chrono             = "0.4.44"
+  anyhow.workspace             = true
+  chrono.workspace             = true
+  once_cell.workspace          = true
+  rstest.workspace             = true
+  serde.workspace              = true
+  serde_json.workspace         = true
+  tempfile.workspace           = true
+  tokio.workspace              = true
+  tracing.workspace            = true
+  tracing-subscriber.workspace = true
+  uuid.workspace               = true

@@ -77,6 +77,37 @@ macro_rules! pattern_check {
     };
 }
 
+#[inline]
+fn check_bounds<T: PartialOrd + std::fmt::Display>(
+    value: T,
+    min: Option<T>,
+    max: Option<T>,
+    label: &str
+) -> bool
+{
+    min.is_none_or(|m| {
+        if value >= m
+        {
+            true
+        }
+        else
+        {
+            debug!("{} rejected: {} < min {}", label, value, m);
+            false
+        }
+    }) && max.is_none_or(|m| {
+        if value <= m
+        {
+            true
+        }
+        else
+        {
+            debug!("{} rejected: {} > max {}", label, value, m);
+            false
+        }
+    })
+}
+
 impl SCompiledFilter
 {
     /// Check if email matches ANY criterion in this filter (OR logic)
@@ -121,45 +152,25 @@ impl SCompiledFilter
 
         // Size checks
         let email_size = email.body_text.len() + email.subject.len();
-        if let Some(min) = crit.min_size_bytes
+        if !check_bounds(
+            email_size as u64,
+            crit.min_size_bytes,
+            crit.max_size_bytes,
+            "Email size"
+        )
         {
-            if (email_size as u64) < min
-            {
-                debug!("Email rejected: size {} < min {}", email_size, min);
-                return false;
-            }
-        }
-        if let Some(max) = crit.max_size_bytes
-        {
-            if (email_size as u64) > max
-            {
-                debug!("Email rejected: size {} > max {}", email_size, max);
-                return false;
-            }
+            return false;
         }
 
-        // Date range checks
-        if let Some(after) = crit.received_after
+        // Date checks
+        if !check_bounds(
+            email.received_at,
+            crit.received_after,
+            crit.received_before,
+            "Email received_at"
+        )
         {
-            if email.received_at < after
-            {
-                debug!(
-                    "Email rejected: received_at {} < after {}",
-                    email.received_at, after
-                );
-                return false;
-            }
-        }
-        if let Some(before) = crit.received_before
-        {
-            if email.received_at > before
-            {
-                debug!(
-                    "Email rejected: received_at {} > before {}",
-                    email.received_at, before
-                );
-                return false;
-            }
+            return false;
         }
 
         debug!(

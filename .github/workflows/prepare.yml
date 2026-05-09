@@ -12,6 +12,7 @@ permissions:
 jobs:
   lint:
     runs-on: "ubuntu-latest"
+    if: "github.actor != 'dependabot[bot]'"
     steps:
       - uses: "actions/checkout@v6"
 
@@ -74,10 +75,12 @@ jobs:
           restore-keys: "${{ runner.os }}-pipx-"
       - run: "pipx install mdformat"
         if: "steps.cache-pipx.outputs.cache-hit != 'true'"
-      - run: "taplo format $(find . -name '*.toml' | grep -v '.github/')"
+      - run: "taplo format $(find . -name '*.toml' -not -path '*/.github/*' -not -path\
+          \ '*/node_modules/*' -not -path '*/target/*')"
       - uses: "taiki-e/install-action@git-cliff"
       - run: "git-cliff -v -o CHANGELOG.md"
-      - run: "mdformat . $(find . -name '*.md' | grep -v '.github/')"
+      - run: "mdformat $(find . -name '*.md' -not -path '*/.github/*' -not -path '*/node_modules/*'\
+          \ -not -path '*/target/*')"
 
       # Commit, tag, push
       - run: |

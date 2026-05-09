@@ -31,7 +31,7 @@ echo ""
 print_stage "Configuration files"
 run_check "Formatting TOML..." "pnpm run fmt:toml" "TOML formatted" "TOML formatting failed"
 run_check "Formatting YAML..." "pnpm run fmt:yaml" "YAML formatted" "YAML formatting failed"
-run_check "Formatting Markdown..." "pnpm run fmt:markdown" "Markdown formatted" "Markdown formatting failed"
+run_check "Formatting Markdown..." "pnpm run fmt:md" "Markdown formatted" "Markdown formatting failed"
 
 echo ""
 print_header "All checks passed!  ໒( ◔ ▾ ◔ )७" "$GREEN"

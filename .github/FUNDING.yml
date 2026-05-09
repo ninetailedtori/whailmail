@@ -3,7 +3,5 @@
 # SPDX-FileContributor: WhailMail contributors
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-
-# These are supported funding model platforms
 github: ["ninetailedtori"]
-ko_fi: ["ninetailedtori"]
+ko_fi: "ninetailedtori"

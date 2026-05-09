@@ -1,11 +1,34 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 #
 # SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
 # SPDX-FileContributor: WhailMail contributors
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
+### Test & Changelog
+#
+. ".husky/utils"
 
-. "$(dirname "$0")/h"
+print_header "Pre-push verification  ୧༼ಠ益ຠ༽୨" "$BLUE"
+check_all_tools
 
-pnpm run build && pnpm run test
+# Backend fixes
+print_stage "Rust backend"
+run_check "Running cargo fix..." "pnpm run fix:backend" "Fixes applied" "Cargo fix failed"
+
+echo ""
+
+# Build & test
+print_stage "Full build & test"
+run_check "Building..." "pnpm run build" "Build successful" "Build failed"
+run_check "Running tests..." "pnpm run test" "Tests passed (๑•́ ω •̀๑)" "Tests failed"
+
+echo ""
+
+# Changelog
+print_stage "Changelog"
+run_check "Generating CHANGELOG.md with git-cliff..." "pnpm run changelog" "Changelog updated" "Changelog generation failed"
+
+echo ""
+print_header "Ready to push!  ヾ(•ω•\`)" "$GREEN"
+exit 0

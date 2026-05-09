@@ -1,0 +1,64 @@
+{
+  "name": "whailmail",
+  "version": "0.0.1",
+  "description": "The app that makes handling your mail, a whale of a time!",
+  "homepage": "https://github.com/whailmail/whailmail",
+  "author": "https://github.com/whailmail",
+  "private": true,
+  "scripts": {
+    "prepare": "pnpm --dir frontend install && husky && ln -sfv -t .git/hooks/ .husky/pre-{commit,push}",
+    "build": "pnpm run build:backend && pnpm run build:frontend",
+    "build:backend": "cd backend && cargo build --release",
+    "build:frontend": "pnpm --dir frontend run build",
+    "dev": "pnpm run dev:backend && pnpm run dev:frontend",
+    "dev:backend": "cd backend && cargo watch -x run",
+    "dev:frontend": "pnpm --dir frontend run dev",
+    "clean": "pnpm run clean:backend && pnpm run clean:frontend",
+    "clean:backend": "cd backend && cargo clean",
+    "clean:frontend": "pnpm --dir frontend run clean",
+    "ci": "pnpm run lint && pnpm run typecheck && pnpm run fmt && pnpm run test && pnpm run changelog",
+    "test": "printf 'Tests are not yet implemented.\n  Reference for when they are: pnpm run test:backend && pnpm run test:frontend'",
+    "test:backend": "cd backend && cargo test",
+    "test:frontend": "pnpm --dir frontend run test",
+    "lint": "pnpm run lint:backend && pnpm run lint:frontend",
+    "lint:backend": "cd backend && cargo clippy",
+    "lint:frontend": "pnpm --dir frontend run lint",
+    "typecheck": "pnpm run typecheck:backend && pnpm run typecheck:frontend",
+    "typecheck:frontend": "pnpm --dir frontend run typecheck",
+    "typecheck:backend": "cd backend && cargo clippy",
+    "fmt": "pnpm run fmt:backend && pnpm run fmt:frontend && pnpm run fmt:other",
+    "fmt:backend": "cd backend && cargo fmt",
+    "fmt:frontend": "pnpm --dir frontend run fmt",
+    "fmt:other": "pnpm run fmt:toml && pnpm run fmt:yaml && pnpm run fmt:md",
+    "fmt:toml": "taplo format",
+    "fmt:yaml": "yamlfix --exclude '*/node_modules/*' --exclude '*/target/*' -- .",
+    "fmt:md": "mdformat -- $(find . -name '*.md' -not -path '*/node_modules/*' -not -path '*/target/*')",
+    "fmt:check": "pnpm run fmt:check:backend && pnpm run fmt:check:frontend",
+    "fmt:check:backend": "cd backend && cargo fmt --check",
+    "fmt:check:frontend": "pnpm --dir frontend run fmt:check",
+    "fmt:check:toml": "taplo format --check",
+    "fmt:check:yaml": "yamlfix --check --exclude '*/node_modules/*' --exclude '*/target/*' -- .",
+    "fmt:check:md": "mdformat --check -- $(find . -name '*.md' -not -path '*/node_modules/*' -not -path '*/target/*')",
+    "fmt:check:other": "pnpm run fmt:check:toml && pnpm run fmt:check:yaml && pnpm run fmt:check:md",
+    "fix:backend": "cd backend && cargo fix",
+    "changelog": "git-cliff -v -o CHANGELOG.md && mdformat -- CHANGELOG.md",
+    "audit": "pnpm audit && cd backend && cargo audit",
+    "outdated": "pnpm outdated && cd backend && cargo outdated",
+    "start": "pnpm --dir frontend run start"
+  },
+  "devDependencies": {
+    "husky": "^9.0.0"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "packageManager": "pnpm@10.33.4+sha512.1c67b3b359b2d408119ba1ed289f34b8fc3c6873412bec6fd264fbdc82489e510fcbecb9ce9d22dae7f3b76269d8441046014bdca53b9979cd7a561ad631b800",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "electron-winstaller",
+      "esbuild",
+      "vue-demi"
+    ]
+  }
+}

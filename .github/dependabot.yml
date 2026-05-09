@@ -9,19 +9,36 @@
 version: 2
 
 updates:
+  # Frontend
   - package-ecosystem: "npm"
     directory: "/frontend/"
     schedule:
       interval: "weekly"
-  - package-ecosystem: "github-actions"
-    directory: "/.github/workflows"
-    schedule:
-      interval: "weekly"
+    groups:
+      frontend:
+        patterns: ["*"]
+
+  # Backend
   - package-ecosystem: "rust-toolchain"
     directory: "/backend/"
     schedule:
       interval: "weekly"
+    groups:
+      backend:
+        patterns: ["*"]
   - package-ecosystem: "cargo"
     directory: "/backend/"
     schedule:
       interval: "weekly"
+    groups:
+      backend:
+        patterns: ["*"]
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/.github/workflows"
+    schedule:
+      interval: "weekly"
+    groups:
+      ci-dependencies:
+        patterns: ["*"]

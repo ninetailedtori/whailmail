@@ -1,0 +1,81 @@
+---
+name: "CI"
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch: null
+
+permissions:
+  contents: "write"
+
+jobs:
+  validate-version:
+    runs-on: "ubuntu-latest"
+    outputs:
+      tag_name: "${{ steps.extract-version.outputs.tag_name }}"
+      version: "${{ steps.extract-version.outputs.version }}"
+    steps:
+      - uses: "actions/checkout@v6"
+      - uses: "taiki-e/install-action@taplo"
+      - run: |
+          VERSION=$(taplo get -f backend/Cargo.toml 'workspace.package.version')
+          TAG="v${VERSION}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "tag_name=${TAG}" >> $GITHUB_OUTPUT
+        id: "extract-version"
+      - run: |
+          if [[ "${{ steps.extract-version.outputs.tag_name }}" == "v" || -z "${{ steps.extract-version.outputs.tag_name }}" ]]; then
+            echo "Invalid version/tag: ${{ steps.extract-version.outputs.tag_name }}"
+            exit 1
+          fi
+  ci:
+    needs: "validate-version"
+    runs-on: "ubuntu-latest"
+    if: "github.actor != 'dependabot[bot]'"
+    outputs:
+      tag_name: "${{ needs.validate-version.outputs.tag_name }}"
+    steps:
+      - uses: "actions/checkout@v6"
+        with:
+          fetch-depth: 0
+      - uses: "pnpm/action-setup@v6"
+      - uses: "actions/setup-node@v6"
+        with:
+          cache: "pnpm"
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            frontend/pnpm-lock.yaml
+      - uses: "dtolnay/rust-toolchain@nightly"
+      - uses: "Swatinem/rust-cache@v2"
+        with:
+          workspaces: "backend"
+      - uses: "taiki-e/install-action@taplo"
+      - uses: "taiki-e/install-action@git-cliff"
+      - uses: "actions/cache@v4"
+        id: "cache-pipx"
+        with:
+          path: |
+            ~/.local/pipx
+            ~/.cache/pipx
+          key: "${{ runner.os }}-pipx-tools"
+          restore-keys: "${{ runner.os }}-pipx-"
+      - run: "pipx install mdformat yamlfix"
+        if: "steps.cache-pipx.outputs.cache-hit != 'true'"
+      - run: "pnpm install --frozen-lockfile --ignore-scripts"
+      - run: "pnpm run ci"
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A ':!.github/**'
+          git commit -m "chore: changelog and formatting [skip ci]" || true
+      - run: |
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ needs.validate-version.outputs.version }}\"/" package.json
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ needs.validate-version.outputs.version }}\"/" frontend/package.json
+          git add package.json frontend/package.json
+          git commit -m "chore: sync versions [skip ci]" || true
+      - run: |
+          git tag -f "${{ needs.validate-version.outputs.tag_name }}"
+      - run: |-
+          git push -f origin main
+          git push -f origin ${{ needs.validate-version.outputs.tag_name }}

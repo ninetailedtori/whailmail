@@ -3,6 +3,16 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+[build]
+  rustflags = [
+    "-C",
+    "target-cpu=native",
+    "-C",
+    "force-frame-pointers=yes",
+    "-C",
+    "link-arg=-Wl,-O4,--sort-common,--as-needed,-z,relro,-z,now,-z,pack-relative-relocs",
+  ]
+
 [term]
   verbose = true
   color   = "auto"
@@ -34,13 +44,3 @@
 
 [profile.bench]
   inherits = "release"
-
-[target]
-  rustflags = [
-    "-C",
-    "target-cpu=native",
-    "-C",
-    "force-frame-pointers=yes",
-    "-C",
-    "link-arg=-Wl,-O4,--sort-common,--as-needed,-z,relro,-z,now,-z,pack-relative-relocs",
-  ]

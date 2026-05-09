@@ -46,6 +46,7 @@ jobs:
       - uses: "actions/checkout@v6"
         with:
           fetch-depth: 0
+      - run: "sudo apt-get update && sudo apt-get install -y mdformat"
 
       # Frontend fmt
       - uses: "pnpm/action-setup@v4"
@@ -67,8 +68,6 @@ jobs:
       - run: "cd backend && cargo fmt"
 
       # YAML/TOML/Markdown fmt
-      - uses: "astral-sh/setup-uv@v7"
-      - run: "uv pip install mdformat --break-system-packages"
       - uses: "taiki-e/install-action@taplo"
       - run: "mdformat . --exclude=\".github\""
       - run: "taplo format $(find . -name '*.toml' | grep -v '.github/')"

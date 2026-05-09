@@ -63,13 +63,21 @@ jobs:
       - run: "cd backend && cargo fmt"
 
       # YAML/TOML/Markdown fmt
-      - uses: "astral-sh/setup-uv@v7"
-      - run: "uv pip install mdformat --break-system-packages"
       - uses: "taiki-e/install-action@taplo"
-      - run: "mdformat . --exclude=\".github\""
+      - uses: "actions/cache@v4"
+        id: "cache-pipx"
+        with:
+          path: |
+            ~/.local/pipx
+            ~/.cache/pipx
+          key: "${{ runner.os }}-pipx-mdformat"
+          restore-keys: "${{ runner.os }}-pipx-"
+      - run: "pipx install mdformat"
+        if: "steps.cache-pipx.outputs.cache-hit != 'true'"
       - run: "taplo format $(find . -name '*.toml' | grep -v '.github/')"
       - uses: "taiki-e/install-action@git-cliff"
       - run: "git-cliff -v -o CHANGELOG.md"
+      - run: "mdformat . --exclude=\".github\""
 
       # Commit, tag, push
       - run: |

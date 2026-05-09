@@ -18,6 +18,9 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "rust-toolchain"
+    directory: "/backend/"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "cargo"
     directory: "/backend/"
     schedule:

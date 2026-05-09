@@ -1,0 +1,95 @@
+---
+name: "Prepare"
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch: null
+
+permissions:
+  contents: "write"
+
+jobs:
+  lint:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v6"
+
+      # Frontend lint
+      - uses: "pnpm/action-setup@v4"
+        with:
+          version: "latest"
+      - uses: "actions/setup-node@v4"
+        with:
+          node-version: "lts/*"
+          cache: "pnpm"
+          cache-dependency-path: "frontend/pnpm-lock.yaml"
+      - run: "cd frontend && pnpm install --frozen-lockfile"
+      - run: "cd frontend && pnpm lint"
+
+      # Backend lint
+      - uses: "dtolnay/rust-toolchain@stable"
+      - uses: "Swatinem/rust-cache@v2"
+        with:
+          workspaces: "backend"
+      - run: "cd backend && cargo clippy"
+
+      # YAML lint
+      - uses: "astral-sh/setup-uv@v7"
+      - run: "uv run yamllint $(find . -name '*.yml' -o -name '*.yaml' | grep -v '.github/')"
+  fmt:
+    needs: "lint"
+    runs-on: "ubuntu-latest"
+    outputs:
+      tag_name: "${{ steps.create-tag.outputs.tag_name }}"
+    steps:
+      - uses: "actions/checkout@v6"
+        with:
+          fetch-depth: 0
+      - run: "sudo apt-get update && sudo apt-get install -y mdformat"
+
+      # Frontend fmt
+      - uses: "pnpm/action-setup@v4"
+        with:
+          version: "latest"
+      - uses: "actions/setup-node@v4"
+        with:
+          node-version: "lts/*"
+          cache: "pnpm"
+          cache-dependency-path: "frontend/pnpm-lock.yaml"
+      - run: "cd frontend && pnpm install --frozen-lockfile"
+      - run: "cd frontend && pnpm fmt"
+
+      # Backend fmt
+      - uses: "dtolnay/rust-toolchain@stable"
+      - uses: "Swatinem/rust-cache@v2"
+        with:
+          workspaces: "backend"
+      - run: "cd backend && cargo fmt"
+
+      # YAML/TOML/Markdown fmt
+      - uses: "taiki-e/install-action@taplo"
+      - run: "mdformat . --exclude=\".github\""
+      - run: "taplo format $(find . -name '*.toml' | grep -v '.github/')"
+      - uses: "taiki-e/install-action@git-cliff"
+      - run: "git-cliff -v -o CHANGELOG.md"
+
+      # Commit, tag, push
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A ':!.github/**'
+          git commit -m "chore: changelog and formatting [skip ci]" || true
+      - run: |
+          VERSION=$(awk -F'"' '/^version = / {gsub(/[[:space:]]/, "", $2); print $2; exit}' backend/Cargo.toml)
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" frontend/package.json
+          git add frontend/package.json
+          git commit -m "chore: sync frontend version [skip ci]" || true
+      - run: |
+          VERSION=$(awk -F'"' '/^version = / {gsub(/[[:space:]]/, "", $2); print $2; exit}' backend/Cargo.toml)
+          TAG="v$VERSION"
+          git tag -f "$TAG"
+          echo "tag_name=$TAG" >> $GITHUB_OUTPUT
+        id: "create-tag"
+      - run: "git push -f origin main"
+      - run: "git push -f origin ${{ steps.create-tag.outputs.tag_name }}"

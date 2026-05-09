@@ -14,7 +14,7 @@
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
     "fmt": "oxfmt .",
-    "format": "pnpm run fmt",
+    "fmt:check": "oxfmt --check .",
     "typecheck": "pnpm run typecheck:node && pnpm run typecheck:web",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false",

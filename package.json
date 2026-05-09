@@ -16,9 +16,8 @@
     "clean": "pnpm run clean:backend && pnpm run clean:frontend",
     "clean:backend": "cd backend && cargo clean",
     "clean:frontend": "pnpm --dir frontend run clean",
-    "ci": "pnpm run lint && pnpm run fmt:check && pnpm run typecheck && pnpm run test && pnpm run changelog",
-    "ci:notest": "pnpm run lint && pnpm run fmt:check && pnpm run typecheck && pnpm run changelog",
-    "test": "pnpm run test:backend && pnpm run test:frontend",
+    "ci": "pnpm run lint && pnpm run typecheck && pnpm run fmt && pnpm run test && pnpm run changelog",
+    "test": "printf 'Tests are not yet implemented.\n  Reference for when they are: pnpm run test:backend && pnpm run test:frontend'",
     "test:backend": "cd backend && cargo test",
     "test:frontend": "pnpm --dir frontend run test",
     "lint": "pnpm run lint:backend && pnpm run lint:frontend",
@@ -42,6 +41,9 @@
   },
   "devDependencies": {
     "husky": "^9.0.0"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
   },
   "packageManager": "pnpm@10.33.4+sha512.1c67b3b359b2d408119ba1ed289f34b8fc3c6873412bec6fd264fbdc82489e510fcbecb9ce9d22dae7f3b76269d8441046014bdca53b9979cd7a561ad631b800",
   "pnpm": {

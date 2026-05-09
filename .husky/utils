@@ -5,56 +5,56 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-### Husky hook utilities & tool validation
+### Utilities
 #
-# Color codes
+## Colour Codes
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 RESET='\033[0m'
-
-# Formatters
+#
+## Formatters
 print_header() {
   message="$1"
-  color="$2"
-  echo ""
-  echo "${color}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-  echo "${color}  ${message}${RESET}"
-  echo "${color}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-  echo ""
+  colour="$2"
+  printf "\n"
+  printf "%b━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━%b\n" "$colour" "$RESET"
+  printf "%b  %s%b\n" "$colour" "$message" "$RESET"
+  printf "%b━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━%b\n" "$colour" "$RESET"
+  printf "\n"
 }
-
+#
 print_stage() {
-  echo "${YELLOW}=> $1${RESET}"
+  printf "%b=> %s%b\n" "$YELLOW" "$1" "$RESET"
 }
-
+#
 print_check() {
-  echo "  $1"
+  printf "  %s\n" "$1"
 }
-
+#
 print_ok() {
-  echo "  ${GREEN}[OK]${RESET} $1"
+  printf "  %b[OK]%b %s\n" "$GREEN" "$RESET" "$1"
 }
-
+#
 print_fail() {
-  echo "  ${RED}[FAIL]${RESET} $1"
+  printf "  %b[FAIL]%b %s\n" "$RED" "$RESET" "$1"
 }
-
-# Tool Checkers
+#
+## Tool Checkers
 check_command() {
   cmd="$1"
   install_hint="$2"
 
   if ! command -v "$cmd" >/dev/null 2>&1; then
     print_fail "Required command not found: ${cmd}"
-    echo "  ${YELLOW}Install hint:${RESET} $install_hint"
+    printf "  %bInstall hint:%b %s\n" "$YELLOW" "$RESET" "$install_hint"
     exit 127
   fi
 
   print_ok "$cmd found"
 }
-
+#
 check_all_tools() {
   print_stage "Checking required tools"
 
@@ -65,10 +65,10 @@ check_all_tools() {
   check_command "yamlfix" "pip install yamlfix"
   check_command "mdformat" "pip install mdformat"
 
-  echo ""
+  printf "\n"
 }
-
-# Runners
+#
+## Runners
 run_check() {
   check_msg="$1"
   cmd="$2"

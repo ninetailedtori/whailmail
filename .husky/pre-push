@@ -1,13 +1,12 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 #
 # SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
 # SPDX-FileContributor: WhailMail contributors
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-### Test, git-cliff
+### Test & Changelog
 #
-. ".husky/h"
 . ".husky/utils"
 
 print_header "Pre-push verification  ୧༼ಠ益ຠ༽୨" "$BLUE"

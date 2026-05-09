@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 #
 # SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
 # SPDX-FileContributor: WhailMail contributors
@@ -7,7 +7,6 @@
 #
 ### Lint & Format
 #
-. ".husky/h"
 . ".husky/utils"
 
 print_header "Pre-commit checks  ୧༼ಠ益ಠ༽୨" "$BLUE"

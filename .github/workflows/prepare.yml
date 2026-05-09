@@ -77,7 +77,7 @@ jobs:
       - run: "taplo format $(find . -name '*.toml' | grep -v '.github/')"
       - uses: "taiki-e/install-action@git-cliff"
       - run: "git-cliff -v -o CHANGELOG.md"
-      - run: "mdformat . --exclude=\".github\""
+      - run: "mdformat . $(find . -name '*.md' | grep -v '.github/')"
 
       # Commit, tag, push
       - run: |

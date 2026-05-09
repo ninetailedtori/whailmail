@@ -18,6 +18,7 @@
 
   [workspace.package]
     version      = "0.0.1"
+    description  = "The app that makes handling your mail, a whale of a time!"
     edition      = "2024"
     license      = "GPL-3.0-or-later"
     license-file = "../COPYING"

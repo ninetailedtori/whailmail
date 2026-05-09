@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
+# SPDX-FileContributor: WhailMail contributors
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+allow_duplicate_keys             = false
+comments_min_spaces_from_content = 2
+comments_require_starting_space  = true
+whitelines                       = 0
+comments_whitelines              = 1
+section_whitelines               = 1
+explicit_start                   = true
+sequence_style                   = "flow_style"
+line_length                      = 80
+none_representation              = "null"
+quote_basic_values               = true
+quote_representation             = '"'

@@ -8,4 +8,4 @@
 
 . "$(dirname "$0")/h"
 
-cd frontend && pnpm run lint && pnpm run typecheck && pnpm run format
+pnpm run build && pnpm run test

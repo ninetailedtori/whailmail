@@ -65,11 +65,9 @@ function createWindow(): void {
   });
 
   if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
-    mainWindow
-      .loadURL(process.env["ELECTRON_RENDERER_URL"])
-      .catch((err) => {
-        console.error("Failed to load dev server:", err);
-      });
+    mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"]).catch((err) => {
+      console.error("Failed to load dev server:", err);
+    });
   } else {
     mainWindow
       .loadFile(join(__dirname, "../renderer/index.html"))

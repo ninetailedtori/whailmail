@@ -38,7 +38,8 @@ onMounted(async () => {
           class="mx-auto mb-12 grid max-w-2xl grid-cols-1 gap-6 md:grid-cols-2"
         >
           <div
-            class="bg-ctp-surface0 border-ctp-surface1 rounded-lg border p-6">
+            class="bg-ctp-surface0 border-ctp-surface1 rounded-lg border p-6"
+          >
             <h2 class="text-ctp-text mb-4 text-lg font-semibold">Status</h2>
             <div class="text-ctp-subtext0 space-y-2 text-sm">
               <p>
@@ -52,9 +53,11 @@ onMounted(async () => {
           </div>
 
           <div
-            class="bg-ctp-surface0 border-ctp-surface1 rounded-lg border p-6">
-            <h2 class="text-ctp-text mb-4 text-lg font-semibold">Quick
-              Start</h2>
+            class="bg-ctp-surface0 border-ctp-surface1 rounded-lg border p-6"
+          >
+            <h2 class="text-ctp-text mb-4 text-lg font-semibold">
+              Quick Start
+            </h2>
             <div class="flex flex-col gap-2">
               <button
                 class="bg-ctp-blue hover:bg-ctp-sapphire text-ctp-crust rounded px-4 py-2 text-sm font-medium transition"

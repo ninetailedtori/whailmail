@@ -6,15 +6,15 @@
  */
 
 /// <reference types="vite/client" />
-export {}
+export {};
 
 declare global {
   interface Window {
     windowControls: {
-      minimize: () => void
-      maximize: () => void
-      close: () => void
-      isMaximized: () => Promise<boolean>
-    }
+      minimize: () => void;
+      maximize: () => void;
+      close: () => void;
+      isMaximized: () => Promise<boolean>;
+    };
   }
 }

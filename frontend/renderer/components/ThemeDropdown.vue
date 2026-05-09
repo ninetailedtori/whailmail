@@ -35,7 +35,7 @@ const handleAccentChange = async (e: Event) => {
       <select
         id="theme"
         :value="theme.currentFlavour"
-        class="bg-ctp-surface0 text-ctp-text border-ctp-surface1 rounded border px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ctp-blue"
+        class="bg-ctp-surface0 text-ctp-text border-ctp-surface1 focus:ring-ctp-blue rounded border px-3 py-1 text-sm focus:ring-2 focus:outline-none"
         @change="handleThemeChange"
       >
         <option
@@ -56,7 +56,7 @@ const handleAccentChange = async (e: Event) => {
       <select
         id="accent"
         :value="theme.currentAccent"
-        class="bg-ctp-surface0 text-ctp-text border-ctp-surface1 rounded border px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ctp-blue"
+        class="bg-ctp-surface0 text-ctp-text border-ctp-surface1 focus:ring-ctp-blue rounded border px-3 py-1 text-sm focus:ring-2 focus:outline-none"
         @change="handleAccentChange"
       >
         <option

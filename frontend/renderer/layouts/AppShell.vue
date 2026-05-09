@@ -7,22 +7,20 @@ import {
   Minus,
   Square,
   X,
-} from '@lucide/vue';
-import Toolbar from 'primevue/toolbar';
-
+} from "@lucide/vue";
+import Toolbar from "primevue/toolbar";
 
 const _minimizeWindow = () => {
   window.windowControls.minimize();
-}
+};
 
 const _maximizeWindow = () => {
   window.windowControls.maximize();
-}
+};
 
 const _closeApplication = () => {
   window.windowControls.close();
-}
-
+};
 </script>
 
 <template>
@@ -31,7 +29,7 @@ const _closeApplication = () => {
       <div class="toolbar">
         <Toolbar class="border-0! border-b!">
           <template #start>
-            <div class="__no_drag inline-flex gap-2 ml-4">
+            <div class="__no_drag ml-4 inline-flex gap-2">
               <button type="button" v-tooltip.bottom="'Fetch new messages'">
                 <cloud-download class="toolbar-icons" />
               </button>
@@ -49,32 +47,36 @@ const _closeApplication = () => {
 
           <template #center>
             <div class="__no_drag my-2">
-              <input type="search" placeholder="Search..."
-                     class="border border-ctp-surface1 bg-ctp-surface0 text-ctp-text rounded-lg px-3 py-1 w-96
-focus:outline-none focus:ring-2 focus:ring-ctp-blue" />
+              <input
+                type="search"
+                placeholder="Search..."
+                class="border-ctp-surface1 bg-ctp-surface0 text-ctp-text focus:ring-ctp-blue w-96 rounded-lg border px-3 py-1 focus:ring-2 focus:outline-none"
+              />
             </div>
           </template>
-
 
           <template #end>
             <div class="__no_drag">
-              <div class="inline-flex gap-2 mr-4">
-                <button type="button" class="window-control-button minimize"
-                        @click="_minimizeWindow">
-                </button>
-                <button type="button" class="window-control-button maximize"
-                        @click="_maximizeWindow">
-                </button>
-                <button type="button" class="window-control-button quit"
-                        @click="_closeApplication">
-                </button>
+              <div class="mr-4 inline-flex gap-2">
+                <button
+                  type="button"
+                  class="window-control-button minimize"
+                  @click="_minimizeWindow"
+                ></button>
+                <button
+                  type="button"
+                  class="window-control-button maximize"
+                  @click="_maximizeWindow"
+                ></button>
+                <button
+                  type="button"
+                  class="window-control-button quit"
+                  @click="_closeApplication"
+                ></button>
               </div>
             </div>
           </template>
-
-
         </Toolbar>
-
       </div>
     </nav>
   </div>
@@ -94,7 +96,7 @@ focus:outline-none focus:ring-2 focus:ring-ctp-blue" />
 }
 
 .toolbar button:not(.window-control-button) {
-  @apply bg-transparent p-1.5 text-ctp-subtext0 rounded-lg cursor-pointer;
+  @apply text-ctp-subtext0 cursor-pointer rounded-lg bg-transparent p-1.5;
   @apply hover:text-ctp-text hover:bg-ctp-surface1;
   @apply transition duration-150 ease-in;
 }
@@ -105,7 +107,7 @@ focus:outline-none focus:ring-2 focus:ring-ctp-blue" />
 
 .window-control-button {
   @apply bg-ctp-surface0;
-  @apply p-2 my-2 rounded-full cursor-pointer text-ctp-text;
+  @apply text-ctp-text my-2 cursor-pointer rounded-full p-2;
   @apply hover:bg-ctp-surface1;
 
   &.quit {
@@ -122,7 +124,7 @@ focus:outline-none focus:ring-2 focus:ring-ctp-blue" />
 }
 
 main {
- /* min-height: calc(100vh - 42px);*/
+  /* min-height: calc(100vh - 42px);*/
   overflow: auto;
 }
 </style>

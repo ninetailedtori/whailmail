@@ -17,12 +17,9 @@ jobs:
       version: "${{ steps.extract-version.outputs.version }}"
     steps:
       - uses: "actions/checkout@v6"
-      - uses: "mikefarah/yq@master"
-        id: "get-version"
-        with:
-          cmd: "tomlq -r '.workspace.package.version' backend/Cargo.toml"
+      - uses: "taiki-e/install-action@taplo"
       - run: |
-          VERSION="${{ steps.get-version.outputs.result }}"
+          VERSION=$(taplo get 'workspace.package.version' backend/Cargo.toml)
           TAG="v${VERSION}"
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "tag_name=${TAG}" >> $GITHUB_OUTPUT

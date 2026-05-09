@@ -1,0 +1,85 @@
+# WhailMail Config :3
+
+[db]
+  url                     = "sqlite://whailmail.db"
+  max_connections         = 5
+  min_idle                = 1
+  connection_timeout_secs = 10
+
+[jwt]
+  secret                  = "your-secret-key-at-least-32-chars-long"
+  expiration_secs         = 3_600
+  refresh_expiration_secs = 25_200
+
+[server]
+  host                 = "127.0.0.1"
+  port                 = 8_080
+  log_level            = "info"
+  cors_allowed_origins = [ "http://localhost:3000", "http://localhost:5173" ]
+
+[external_mail]
+  # IMAP sync from external servers
+  poll_interval_secs      = 300
+  max_concurrent_syncs    = 5
+  connection_timeout_secs = 30
+  idle_timeout_secs       = 600
+  # SMTP sending to external servers
+  send_timeout_secs = 30
+  max_retries       = 3
+
+[mail_limits]
+  max_attachment_size_bytes = 25_000_000
+  max_email_body_size_bytes = 100_000_000
+  max_recipients_per_email  = 100
+
+[mailserver]
+  enabled = false
+  # SMTP inbound server
+  smtp_bind_host = "0.0.0.0"
+  smtp_bind_port = 25
+  smtp_tls_port  = 587
+  # IMAP server for clients
+  imap_bind_host = "0.0.0.0"
+  imap_bind_port = 993
+  imap_tls_port  = 143
+  # TLS certificates
+  tls_enabled   = true
+  tls_cert_path = "/etc/whailmail/certs/cert.pem"
+  tls_key_path  = "/etc/whailmail/certs/key.pem"
+  # Domain configuration
+  accepted_domains = [ "example.com", "mail.example.com" ]
+  # Queue settings
+  max_queue_size_mb   = 500
+  retry_interval_secs = 300
+
+[indexer]
+  # Global enable/disable (can be overridden per-account in UI)
+  enabled = true
+  # Storage location
+  index_dir = "./data/index"
+  # Batch size for indexing operations
+  batch_size = 1000
+  # How often to flush pending index updates
+  flush_interval_secs = 60
+  # Rebuild index if older than this many days (0 = never auto-rebuild)
+  reindex_after_days = 0
+
+[filters]
+  # All modes: apply rules when syncing from external servers
+  sync_time_rules_enabled = true
+  # Mailserver-only: apply rules at SMTP delivery time
+  delivery_time_rules_enabled = false
+
+[features]
+  self_hosted_mode   = false
+  encryption_enabled = false
+  enable_s3_storage  = false
+
+  [features.encryption_config]
+    algorithm         = "aes-256-gcm"
+    key_rotation_days = 90
+
+  [features.s3_config]
+    bucket   = "whailmail"
+    region   = "us-east-1"
+    endpoint = "v1"

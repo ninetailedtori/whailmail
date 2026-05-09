@@ -1,8 +1,18 @@
-[*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,vue,css,scss,sass,less,styl,.json,.jsonc}]
+# SPDX-FileCopyrightText: 2026-Present ninetailedtori <ninetailedtori@uwu.gal>
+# SPDX-FileContributor: WhailMail contributors
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[*]
 charset = utf-8
-indent_size = 2
+end_of_line = lf
 indent_style = space
 insert_final_newline = true
-trim_trailing_whitespace = true
-end_of_line = lf
 max_line_length = 80
+trim_trailing_whitespace = true
+
+[*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,vue,css,scss,sass,less,styl,json,jsonc,toml,yml,editorconfig}]
+indent_size = 2
+
+[*.rs]
+indent_size = 4

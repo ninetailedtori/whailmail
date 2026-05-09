@@ -1,0 +1,43 @@
+# SPDX-FileCopyrightText: 2026-Present ninetailedtori <ninetailedtori@uwu.gal>
+# SPDX-FileContributor: WhailMail contributors
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+## Be Extra Careful (Strict Mode Activated)
+check-incompatible-msrv-in-tests             = true
+check-inconsistent-struct-field-initializers = true
+check-private-items                          = true
+enforce-iter-loop-reborrow                   = true
+lint-commented-code                          = true
+warn-on-all-wildcard-imports                 = true
+warn-unsafe-macro-metavars-in-private-macros = true
+
+## Keep Our Docs Pretty & Consistent :3
+doc-valid-idents = [
+  "SMTP",
+  "IMAP",
+  "JWT",
+  "TLS",
+  "DKIM",
+  "SPF",
+  "DMARC",
+  "SQLite",
+  "PostgreSQL",
+  "WebSocket",
+  "UUID",
+  "HS256",
+  "RS256",
+  "EOF",
+]
+
+## Test Time Shenanigans (We're Allowed to Live a Little)
+allow-expect-in-tests = true
+allow-unwrap-in-tests = true
+
+## Know Your Limits (Reasonable Thresholds)
+too-many-arguments-threshold   = 8
+too-many-lines-threshold       = 250
+cognitive-complexity-threshold = 30
+type-complexity-threshold      = 250
+enum-variant-name-threshold    = 3
+enum-variant-size-threshold    = 200

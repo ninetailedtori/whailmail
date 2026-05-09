@@ -1,0 +1,99 @@
+# SPDX-FileCopyrightText: 2026-Present ninetailedtori <ninetailedtori@uwu.gal>
+# SPDX-FileContributor: WhailMail contributors
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# The Essentials
+style_edition    = "2024"
+color            = "Auto"
+required_version = ">=1.0.0"
+
+# Error Handling
+# Let's be strict about what we format
+error_on_line_overflow = false
+error_on_unformatted   = false
+show_parse_errors      = true
+
+# Spacing & Blank Lines
+# Keep things breathing, but not too much
+blank_lines_lower_bound = 0
+blank_lines_upper_bound = 1
+
+# Tabs & Indentation
+# Going with spaces like civilized people
+hard_tabs     = false
+tab_spaces    = 4
+indent_style  = "Block"
+newline_style = "Unix"
+
+# Braces & Control Flow
+# We like our braces on a new line, thank you very much
+brace_style                = "AlwaysNextLine"
+control_brace_style        = "AlwaysNextLine"
+combine_control_expr       = false
+force_multiline_blocks     = true
+match_arm_blocks           = true
+match_arm_leading_pipes    = "Always"
+match_arm_indent           = true
+match_block_trailing_comma = true
+
+# Function Signatures
+# Make functions look nice and explicit
+fn_params_layout   = "Tall"
+fn_single_line     = true
+force_explicit_abi = true
+
+# Imports & Organization
+# Keep our dependencies neat!!!
+reorder_imports     = true
+imports_layout      = "HorizontalVertical"
+imports_indent      = "Block"
+imports_granularity = "One"
+group_imports       = "StdExternalCrate"
+reorder_modules     = true
+
+# Comments & String Formatting
+# Yea, I'm picky about my strings.
+format_code_in_doc_comments = true
+format_macro_matchers       = true
+format_macro_bodies         = true
+format_strings              = true
+normalize_comments          = true
+normalize_doc_attributes    = true
+wrap_comments               = true
+format_generated_files      = true
+
+# Spacing & Punctuation
+# Yes, yes, I'm pedantic...
+space_after_colon        = true
+space_before_colon       = false
+spaces_around_ranges     = true
+type_punctuation_density = "Wide"
+remove_nested_parens     = true
+inline_attribute_width   = 50
+
+# Structs & Derived Traits
+# Strict structing heheh
+struct_field_align_threshold = 60
+struct_lit_single_line       = false
+empty_item_single_line       = true
+merge_derives                = true
+reorder_impl_items           = true
+
+# Operators & Literals
+# Formatting the nitty-gritty
+binop_separator             = "Front"
+hex_literal_case            = "Upper"
+float_literal_trailing_zero = "Always"
+trailing_comma              = "Never"
+trailing_semicolon          = true
+overflow_delimited_expr     = false
+condense_wildcard_suffixes  = true
+
+# Random QOL Thingymajigs!
+max_width                = 80
+use_field_init_shorthand = true
+use_try_shorthand        = true
+use_small_heuristics     = "Default"
+where_single_line        = true
+unstable_features        = false

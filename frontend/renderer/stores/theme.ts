@@ -1,3 +1,10 @@
+/*
+ * SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
+ * SPDX-FileContributor: WhailMail contributors
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 // stores/theme.ts
 import "@catppuccin/tailwindcss/mocha.css";
 import { onMounted, ref } from "vue";
@@ -37,18 +44,6 @@ const accentColours = [
   "sapphire",
   "blue",
   "lavender",
-  "text",
-  "subtext1",
-  "subtext0",
-  "overlay2",
-  "overlay1",
-  "overlay0",
-  "surface2",
-  "surface1",
-  "surface0",
-  "base",
-  "mantle",
-  "crust",
 ] as const;
 
 export const useTheme = () => {

@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2026-Present ninetailedtori <ninetailedtori@uwu.gal>
+# SPDX-FileContributor: WhailMail contributors
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[package]
+  name              = "whailmail-filters"
+  version.workspace = true
+  edition.workspace = true
+  authors.workspace = true
+  license.workspace = true
+
+[dependencies]
+  whailmail-common.workspace = true
+
+  chrono.workspace  = true
+  globset.workspace = true
+  regex.workspace   = true
+  tracing.workspace = true

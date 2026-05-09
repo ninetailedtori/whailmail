@@ -1,0 +1,93 @@
+# SPDX-FileCopyrightText: 2026-Present ninetailedtori <ninetailedtori@uwu.gal>
+# SPDX-FileContributor: WhailMail contributors
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[build]
+  rustc-wrapper = "sccache"
+
+[term]
+  verbose = true
+  color   = "auto"
+
+[doc]
+  open = true
+
+[env]
+  CC       = "clang"
+  CXX      = "clang++"
+  CC_LD    = "lld"
+  CXX_LD   = "lld"
+  CFLAGS   = "-march=native -mtune=native -O3 -fPIC -fstack-protector-strong -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -Wp,-D_FORTIFY_SOURCE=3"
+  CXXFLAGS = "-march=native -mtune=native -O3 -fPIC -fstack-protector-strong -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -Wp,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS"
+  LDFLAGS  = "-fuse-ld=lld -Wl,-O4,--sort-common,--as-needed,-z,relro,-z,now,-z,pack-relative-relocs"
+
+[profile.dev]
+  opt-level     = 0
+  debug         = true
+  codegen-units = 256
+
+[profile.release]
+  opt-level     = 3
+  lto           = "fat"
+  codegen-units = 1
+  debug         = false
+  strip         = true
+
+[profile.release-with-debug]
+  inherits = "release"
+  debug    = true
+  strip    = false
+
+[profile.bench]
+  inherits = "release"
+
+[target.x86_64-unknown-linux-gnu]
+  rustflags = [
+    "-C",
+    "target-cpu=native",
+    "-C",
+    "force-frame-pointers=yes",
+    "-C",
+    "link-arg=-fuse-ld=lld",
+    "-C",
+    "link-arg=-Wl,-O4,--sort-common,--as-needed,-z,relro,-z,now,-z,pack-relative-relocs",
+  ]
+
+[target.x86_64-unknown-linux-musl]
+  rustflags = [
+    "-C",
+    "target-cpu=native",
+    "-C",
+    "force-frame-pointers=yes",
+    "-C",
+    "link-arg=-fuse-ld=lld",
+  ]
+
+[target.aarch64-unknown-linux-gnu]
+  rustflags = [
+    "-C",
+    "force-frame-pointers=yes",
+    "-C",
+    "link-arg=-fuse-ld=lld",
+  ]
+
+[target.aarch64-unknown-linux-musl]
+  rustflags = [
+    "-C",
+    "force-frame-pointers=yes",
+    "-C",
+    "link-arg=-fuse-ld=lld",
+  ]
+
+[target.x86_64-apple-darwin]
+  rustflags = [ "-C", "split-debuginfo=packed" ]
+
+[target.aarch64-apple-darwin]
+  rustflags = [ "-C", "split-debuginfo=packed" ]
+
+[target.x86_64-pc-windows-msvc]
+  rustflags = [ "-C", "target-feature=+crt-static" ]
+
+[target.aarch64-pc-windows-msvc]
+  rustflags = [ "-C", "target-feature=+crt-static" ]

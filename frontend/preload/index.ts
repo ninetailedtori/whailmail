@@ -1,3 +1,10 @@
+/*
+ * SPDX-FileCopyrightText: 2026–Present ninetailedtori <ninetailedtori@uwu.gal>
+ * SPDX-FileContributor: WhailMail contributors
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 import { electronAPI } from "@electron-toolkit/preload";
 import { contextBridge } from "electron";
 

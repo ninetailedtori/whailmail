@@ -16,7 +16,7 @@ jobs:
       - uses: "actions/checkout@v6"
 
       # Frontend lint
-      - uses: "pnpm/action-setup@v4"
+      - uses: "pnpm/action-setup@v6"
         with:
           version: "latest"
       - uses: "actions/setup-node@v6"
@@ -44,7 +44,7 @@ jobs:
           fetch-depth: 0
 
       # Frontend fmt
-      - uses: "pnpm/action-setup@v4"
+      - uses: "pnpm/action-setup@v6"
         with:
           version: "latest"
       - uses: "actions/setup-node@v6"

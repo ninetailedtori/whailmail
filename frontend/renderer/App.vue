@@ -13,7 +13,8 @@ import ThemeDropdown from "./components/ThemeDropdown.vue";
 const platform = ref("unknown");
 
 onMounted(async () => {
-  // @ts-expect-error (define in dts)
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore (defined in preload/index.ts)
   platform.value = await window.electron.ipcRenderer.invoke("get-platform");
 });
 </script>

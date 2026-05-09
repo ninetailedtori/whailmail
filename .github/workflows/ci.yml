@@ -58,9 +58,9 @@ jobs:
           path: |
             ~/.local/pipx
             ~/.cache/pipx
-          key: "${{ runner.os }}-pipx-mdformat"
+          key: "${{ runner.os }}-pipx-tools"
           restore-keys: "${{ runner.os }}-pipx-"
-      - run: "pipx install mdformat"
+      - run: "pipx install mdformat yamlfix"
         if: "steps.cache-pipx.outputs.cache-hit != 'true'"
       - run: "pnpm install --frozen-lockfile --ignore-scripts"
       - run: "pnpm run ci"

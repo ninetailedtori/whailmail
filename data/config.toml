@@ -1,3 +1,5 @@
+# WhailMail Config :3
+
 [db]
   url                     = "sqlite://whailmail.db"
   max_connections         = 5

@@ -23,15 +23,26 @@
 @import "@assets/components/button.css";
 @import "@assets/components/versions.css";
 
+/* PrimeVue styles */
+@import "@assets/prime.css";
+
+/* Main Styling */
+.dragger {
+  app-region: drag;
+  user-select: none;
+  width: 100%;
+}
+
+.__no_drag {
+  app-region: no-drag;
+  user-select: none;
+}
+
 /* Global body */
 body {
   color: var(--color-ctp-text);
   background-color: var(--color-ctp-base);
   font-family: var(--font-sans);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
   user-select: none;
 }
 
@@ -41,4 +52,19 @@ body {
   justify-content: center;
   flex-direction: column;
   margin-bottom: var(--space-2xl);
+}
+
+@layer base {
+  html,
+  body,
+  #app {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  main {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+  }
 }

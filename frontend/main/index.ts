@@ -11,6 +11,8 @@ import { electronApp, is, optimizer } from "@electron-toolkit/utils";
 import icon from "@resources/icon.png?asset";
 import { app, BrowserWindow, ipcMain, screen, shell } from "electron";
 
+let mainWindow: BrowserWindow | null = null;
+
 function createWindow(): void {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } =
@@ -19,18 +21,23 @@ function createWindow(): void {
   const windowWidth = Math.floor(screenWidth / 2);
   const windowHeight = Math.floor(screenHeight / 2);
 
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: windowWidth,
     height: windowHeight,
     x: Math.floor(screenWidth / 4),
     y: Math.floor(screenHeight / 4),
+
     show: false,
-    autoHideMenuBar: true,
-    alwaysOnTop: true,
+
+    titleBarStyle: "hidden",
+
     ...(process.platform === "linux" ? { icon } : {}),
+
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       sandbox: false,
+      contextIsolation: true,
+      nodeIntegration: false,
     },
   });
 
@@ -46,13 +53,14 @@ function createWindow(): void {
   );
 
   mainWindow.on("ready-to-show", () => {
-    mainWindow.show();
+    mainWindow?.show();
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url).catch((err) => {
       console.error("Failed to open external URL:", err);
     });
+
     return { action: "deny" };
   });
 
@@ -69,51 +77,72 @@ function createWindow(): void {
   }
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+// ==============================
+// App Ready
+// ==============================
+
 app
   .whenReady()
   .then((): void => {
-    // Set app user model id for windows
     electronApp.setAppUserModelId("com.electron");
 
     app.setName("WhailMail");
 
-    // Default open or close DevTools by F12 in development
-    // and ignore CommandOrControl + R in production.
-    // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
     app.on("browser-window-created", (_, window) => {
       optimizer.watchWindowShortcuts(window);
     });
 
-    // IPC test
+    // ==============================
+    // Window Controls IPC
+    // ==============================
+
+    ipcMain.on("window:minimize", () => {
+      mainWindow?.minimize();
+    });
+
+    ipcMain.on("window:maximize", () => {
+      if (!mainWindow) return;
+
+      if (mainWindow.isMaximized()) {
+        mainWindow.unmaximize();
+      } else {
+        mainWindow.maximize();
+      }
+    });
+
+    ipcMain.on("window:close", () => {
+      mainWindow?.close();
+    });
+
+    ipcMain.handle("window:isMaximized", () => {
+      return mainWindow?.isMaximized() ?? false;
+    });
+
+    // Existing IPC
     ipcMain.on("ping", () => console.log("pong"));
+
+    ipcMain.handle("get-platform", () => {
+      return process.platform;
+    });
 
     createWindow();
 
     app.on("activate", function () {
-      // On macOS, it's common to re-create a window in the app when the
-      // dock icon is clicked and there are no other windows open.
-      if (BrowserWindow.getAllWindows().length === 0) createWindow();
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+      }
     });
   })
   .catch((err): void => {
     console.error("Failed to initialize app:", err);
   });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// ==============================
+// Quit Handling
+// ==============================
+
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
 });
-
-ipcMain.handle("get-platform", () => {
-  return process.platform; // "win32", "darwin", "linux"
-});
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.

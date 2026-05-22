@@ -52,7 +52,7 @@ jobs:
           workspaces: "backend"
       - uses: "taiki-e/install-action@taplo"
       - uses: "taiki-e/install-action@git-cliff"
-      - uses: "actions/cache@v4"
+      - uses: "actions/cache@v5"
         id: "cache-pipx"
         with:
           path: |

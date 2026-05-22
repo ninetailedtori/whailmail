@@ -8,6 +8,7 @@
   ],
   "compilerOptions": {
     "composite": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "ignoreDeprecations": "6.0",
     "paths": {

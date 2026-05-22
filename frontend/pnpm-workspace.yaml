@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 overrides:
-  vue: "beta"
+  '@vue/compat': "beta"
   '@vue/compiler-core': "beta"
   '@vue/compiler-dom': "beta"
   '@vue/compiler-sfc': "beta"
@@ -16,7 +16,8 @@ overrides:
   '@vue/runtime-vapor': "beta"
   '@vue/server-renderer': "beta"
   '@vue/shared': "beta"
-  '@vue/compat': "beta"
+  vue: "beta"
+  ws@>=8.0.0 <8.20.1: ">=8.20.1"
 
 peerDependencyRules:
   allowAny: ["vue"]

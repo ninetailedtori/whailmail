@@ -27,7 +27,7 @@ impl SPool
 {
     pub async fn new(config: SDbConfig) -> Result<Self, EAppError>
     {
-        info!("Initializing database pool from: {}", config.url);
+        info!("new(): initializing database pool from: {}", config.url);
 
         let connect_opts = SqliteConnectOptions::from_str(&config.url)
             .map_err(|e| {
@@ -53,7 +53,7 @@ impl SPool
                 ))
             })?;
 
-        debug!("Database pool created (SQLite)");
+        debug!("new(): database pool created (SQLite)");
 
         Ok(Self {
             inner: pool
@@ -95,7 +95,7 @@ impl SPool
             .execute(self.inner())
             .await
             .map_err(|e| {
-                warn!("Database health check failed: {}", e);
+                warn!("health(): database health check failed: {}", e);
                 EAppError::DatabaseError(anyhow!("Database unreachable"))
             })?;
 
@@ -105,7 +105,7 @@ impl SPool
     pub async fn close(self) -> Result<(), EAppError>
     {
         self.inner.close().await;
-        info!("Database pool closed");
+        info!("close(): database pool closed");
         Ok(())
     }
 }

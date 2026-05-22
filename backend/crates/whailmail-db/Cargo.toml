@@ -9,3 +9,18 @@
   edition.workspace = true
   authors.workspace = true
   license.workspace = true
+
+[dependencies]
+  whailmail-common.workspace = true
+
+  anyhow.workspace      = true
+  argon2.workspace      = true
+  chrono.workspace      = true
+  proc-macro2.workspace = true
+  serde.workspace       = true
+  serde_json.workspace  = true
+  sqlx.workspace        = true
+  thiserror.workspace   = true
+  tokio.workspace       = true
+  tracing.workspace     = true
+  uuid.workspace        = true

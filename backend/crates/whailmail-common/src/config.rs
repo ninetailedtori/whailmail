@@ -213,6 +213,16 @@ impl SDbConfig
         }
         Ok(())
     }
+
+    pub fn test_sqlite() -> Self
+    {
+        Self {
+            url:                     "sqlite::memory:".to_string(),
+            max_connections:         5,
+            min_idle:                1,
+            connection_timeout_secs: 10
+        }
+    }
 }
 
 impl SJwtConfig

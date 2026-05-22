@@ -25,10 +25,9 @@ pub mod macros;
 pub mod theme;
 pub mod types;
 
-// Re-export key types for convenience
 use tracing_subscriber::{filter::EnvFilter, fmt, prelude::*};
 pub use {
-    config::SConfig,
+    config::*,
     error::{EAppError, RAppResult},
     types::*
 };

@@ -15,7 +15,7 @@ async fn test_db_connection()
         .await
         .expect("DB init failed");
 
-    assert!(db.health_check().await.is_ok());
+    assert!(db.health().await.is_ok());
 }
 
 #[tokio::test]

@@ -6,7 +6,7 @@
   "author": "https://github.com/whailmail",
   "private": true,
   "scripts": {
-    "prepare": "pnpm --dir frontend install && husky && ln -sfv -t .git/hooks/ .husky/pre-{commit,push}",
+    "prepare": "pnpm --dir frontend install --no-frozen-lockfile && husky && ln -sfv -t .git/hooks/ .husky/pre-{commit,push}",
     "build": "pnpm run build:backend && pnpm run build:frontend",
     "build:backend": "cd backend && cargo build --release",
     "build:frontend": "pnpm --dir frontend run build",
